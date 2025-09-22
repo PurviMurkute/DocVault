@@ -1,0 +1,49 @@
+import React from "react";
+import Header from "../components/Header";
+import Button from "../components/Button";
+import { useNavigate } from "react-router";
+
+const Home = () => {
+    const navigate = useNavigate();
+
+  return (
+    <div className="min-h-screen">
+      <div className="min-h-screen w-full bg-[#f8fafc] relative">
+        <div
+          className="absolute inset-0 z-0"
+          style={{
+            backgroundImage: `
+        linear-gradient(to right, #e2e8f0 1px, transparent 1px),
+        linear-gradient(to bottom, #e2e8f0 1px, transparent 1px)
+      `,
+            backgroundSize: "20px 30px",
+            WebkitMaskImage:
+              "radial-gradient(ellipse 70% 60% at 50% 0%, #000 60%, transparent 100%)",
+            maskImage:
+              "radial-gradient(ellipse 70% 60% at 50% 0%, #000 60%, transparent 100%)",
+          }}
+        />
+        <Header />
+        <div className="flex flex-col gap-7 justify-center items-center inset-0 w-[50%] h-[650px] absolute mx-auto">
+          <h1 className="bg-gradient-to-r from-purple-600 via-[#f44646] to-pink-500 inline-block text-transparent bg-clip-text font-extrabold text-4xl">
+            Your Digital Document Locker
+          </h1>
+          <h4 className="font-bold text-center text-gray-700 text-[17px]">
+            Upload your important files, certificates, PDFs, and images with
+            complete security. Access them from anywhere, anytime — safely
+            stored with end-to-end encryption using ImageKit CDN.
+          </h4>
+          <Button
+            btnText="Get Started"
+            icon="get started"
+            variant="blue"
+            btnSize="large"
+            onclick={() => navigate("/register")}
+          />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Home;

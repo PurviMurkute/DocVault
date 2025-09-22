@@ -1,0 +1,19 @@
+import React from 'react'
+import logo from '../assets/pages.png'
+import Button from './Button'
+
+const Header = () => {
+  return (
+    <div className='bg-black w-[95%] md:w-[75%] lg:w-1/2 px-5 py-2 m-1 rounded-full z-10 sticky top-0 mx-auto'>
+        <div className='flex justify-between items-center'>
+      <h1 className='text-white flex items-center gap-2 '>
+        <img src={logo} alt='logo' className='w-[30px]' />
+        <p className='text-2xl font-medium font-serif'>DocVault</p>
+      </h1>
+      <Button btnText="Login" icon="login" variant="red" btnSize="medium" />
+      </div>
+    </div>
+  )
+}
+
+export default Header
