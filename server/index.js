@@ -3,6 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import passport from './config/passport.js';
 import mongoose from 'mongoose';
+import userRouter from './routes/userRoutes.js';
 
 dotenv.config();
 
@@ -30,6 +31,8 @@ app.get('/health', (req, res) => {
         message: "Server is healthy"
     })
 });
+
+app.use('/api', userRouter);
 
 connDB();
 app.listen(PORT, () => {
