@@ -66,49 +66,42 @@ const registerUser = async (req, res) => {
 };
 
 const loginUser = async (req, res, next) => {
-  try {
-    passport.authenticate("local", { session: false }, (error, user, info) => {
-      if (error) {
-        return res.status(400).json({
-          success: false,
-          data: null,
-          message: error?.message,
-        });
-      }
-
-      if (!user) {
-        return res.status(404).json({
-          success: false,
-          data: null,
-          message: info?.message,
-        });
-      }
-
-      const jwtToken = jwt.sign(
-        {
-          _id: user._id,
-          fullname: user.fullname,
-          email: user.email,
-        },
-        process.env.JWT_SECRET,
-        { expiresIn: "7d" }
-      );
-
-      user.password = undefined;
-
-      return res.status(201).json({
-        success: true,
-        data: user,
-        jwtToken,
-        message: "Login Successfull",
+  passport.authenticate("local", { session: false }, (error, user, info) => {
+    if (error) {
+      return res.status(400).json({
+        success: false,
+        data: null,
+        message: error?.message,
       });
-    })(req, res, next);
-  } catch (error) {
-    return res.status(400).json({
-      success: false,
-      message: error?.message,
+    }
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        data: null,
+        message: info?.message,
+      });
+    }
+
+    const jwtToken = jwt.sign(
+      {
+        _id: user._id,
+        fullname: user.fullname,
+        email: user.email,
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: "7d" }
+    );
+
+    user.password = undefined;
+
+    return res.status(201).json({
+      success: true,
+      data: user,
+      jwtToken,
+      message: "Login Successfull",
     });
-  }
+  })(req, res, next);
 };
 
 export { registerUser, loginUser };

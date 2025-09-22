@@ -10,17 +10,20 @@ const Button = ({ btnText, icon, variant, btnSize, onclick }) => {
   const variants = {
     red: "bg-[#ff1a1a]",
     blue: "bg-[#0073e6]",
-    black: "bg-gray-800"
+    black: "bg-gray-800",
   };
 
   const btnSizes = {
-    "large": "px-9 py-3 rounded-lg",
-    "medium": "px-5 py-1 rounded-full",
-    "small": "py-2 w-[85%] mx-auto my-3 rounded-lg"
-  }
+    large: "px-9 py-3 rounded-lg",
+    medium: "px-5 py-1 rounded-full",
+    small: "py-2 w-[85%] mx-auto my-3 rounded-lg",
+  };
 
   return (
-    <button className={`${variants[variant]} ${btnSizes[btnSize]} text-white font-medium justify-center flex items-center gap-1 cursor-pointer`} onClick={onclick}>
+    <button
+      className={`${variants[variant]} ${btnSizes[btnSize]} text-white font-medium justify-center flex items-center gap-1 cursor-pointer hover:scale-95 transition-transform duration-100`}
+      onClick={onclick}
+    >
       {btnText} {icon ? icons[icon] : null}
     </button>
   );

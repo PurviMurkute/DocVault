@@ -4,7 +4,7 @@ import { createContext } from "react";
 
 const UserContext = createContext();
 
-const contextProvider = ({ children }) => {
+const ContextProvider = ({ children }) => {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
@@ -21,7 +21,9 @@ const contextProvider = ({ children }) => {
     setUser,
   };
 
-  return <UserContext value={contextValue}>{children}</UserContext>;
+  return (
+    <UserContext.Provider value={contextValue}>{children}</UserContext.Provider>
+  );
 };
 
-export { UserContext, contextProvider };
+export { UserContext, ContextProvider };

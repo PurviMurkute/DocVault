@@ -24,8 +24,8 @@ const Home = () => {
           }}
         />
         <Header />
-        <div className="flex flex-col gap-7 justify-center items-center inset-0 w-[50%] h-[650px] absolute mx-auto">
-          <h1 className="bg-gradient-to-r from-purple-600 via-[#f44646] to-pink-500 inline-block text-transparent bg-clip-text font-extrabold text-4xl">
+        <div className="flex flex-col gap-7 justify-center items-center inset-0 w-[95%] md:w-[70%] lg:w-[50%] h-[650px] absolute mx-auto">
+          <h1 className="text-center bg-gradient-to-r from-purple-600 via-[#f44646] to-pink-500 inline-block text-transparent bg-clip-text font-extrabold text-4xl">
             Your Digital Document Locker
           </h1>
           <h4 className="font-bold text-center text-gray-700 text-[17px]">

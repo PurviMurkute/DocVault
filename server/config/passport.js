@@ -10,13 +10,13 @@ passport.use(
       try {
         const user = await User.findOne({ email });
         if (!user) {
-          done(null, false, { message: "user not found with this email" });
+          return done(null, false, { message: "user not found with this email" });
         }
 
         const isPasswordValid = await bcrypt.compare(password, user.password);
 
         if (!isPasswordValid) {
-          done(null, false, { message: "invalid credentials" });
+          return done(null, false, { message: "invalid credentials" });
         }
 
         return done(null, user, { message: "Login Successful" });

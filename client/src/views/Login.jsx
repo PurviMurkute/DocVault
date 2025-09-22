@@ -1,0 +1,96 @@
+import React, { useContext, useState} from 'react'
+import Header from '../components/Header';
+import toast, { Toaster } from 'react-hot-toast';
+import { Link, useNavigate } from 'react-router';
+import { UserContext } from '../context/UserContext';
+import Input from '../components/Input';
+import Button from '../components/Button'
+import axios from 'axios';
+
+const Login = () => {
+    const [loginUser, setLoginUser] = useState({
+    email: "",
+    password: "",
+  });
+
+  const navigate = useNavigate();
+
+  const { user, setUser } = useContext(UserContext);
+
+  const login = async () => {
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_SERVER_URL}/login`,
+        {
+          email: loginUser.email,
+          password: loginUser.password,
+        }
+      );
+
+      if (response.data.success) {
+        toast.success(response.data.message);
+        setLoginUser(response.data.data);
+        setUser(response.data.data);
+        localStorage.setItem("JWT", response.data.token);
+        localStorage.setItem("user", JSON.stringify(response.data.data));
+        setTimeout(() => {
+          navigate("/");
+        }, 2000);
+        setLoginUser({
+          email: "",
+          password: "",
+        });
+      } else {
+        toast.error(response.data.message);
+      }
+    } catch (error) {
+      toast.error(
+        error?.response?.data?.message || error?.message || "Login failed"
+      );
+    }
+  };
+
+  return (
+    <div className="min-h-screen relative">
+      <Header />
+      <div className="flex justify-center items-center absolute inset-0">
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+          }}
+          className="bg-gradient-to-b from-purple-200 via-pink-200 to-blue-200 w-[400px] flex flex-col justify-center py-15 px-5 rounded-md shadow-md"
+        >
+          <h5 className="font-bold text-center text-gray-700 mb-2 text-lg">Welcome Back to DocVault</h5>
+          <p className="font-medium text-center text-gray-600 px-5 text-sm">Securely access your stored documents anytime, anywhere.</p>
+          <Input
+            type="text"
+            placeholder="Email"
+            value={loginUser.email}
+            onChange={(e) => {
+              setLoginUser({ ...loginUser, email: e.target.value });
+            }}
+          />
+          <Input
+            type="password"
+            placeholder="Password"
+            value={loginUser.password}
+            onChange={(e) => {
+              setLoginUser({ ...loginUser, password: e.target.value });
+            }}
+          />
+          <Button
+            btnText="Login"
+            btnSize="small"
+            icon="login"
+            variant="black"
+            onclick={login}
+          />
+          <p className="text-center font-bold text-gray-800 py-2">Don't have an accout? <Link to={'/register'} className='text-blue-600'>Register now</Link></p>
+        </form>
+      </div>
+      <Toaster />
+    </div>
+  )
+}
+
+export default Login
