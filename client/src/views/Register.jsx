@@ -89,7 +89,7 @@ const Register = () => {
             variant="black"
             onclick={register}
           />
-          <p className="text-center font-bold text-gray-800 py-2">
+          <p className="text-center font-medium text-gray-800 py-2 text-[15px]">
             Already have an account?{" "}
             <Link to={"/login"} className="text-blue-600">
               Login now

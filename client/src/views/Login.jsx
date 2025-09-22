@@ -85,7 +85,7 @@ const Login = () => {
             variant="black"
             onclick={login}
           />
-          <p className="text-center font-bold text-gray-800 py-2">Don't have an accout? <Link to={'/register'} className='text-blue-600'>Register now</Link></p>
+          <p className="text-center font-medium text-gray-800 py-2 text-[15px]">Don't have an accout? <Link to={'/register'} className='text-blue-600'>Register now</Link></p>
         </form>
       </div>
       <Toaster />

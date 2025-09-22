@@ -30,8 +30,8 @@ const Home = () => {
           </h1>
           <h4 className="font-bold text-center text-gray-700 text-[17px]">
             Upload your important files, certificates, PDFs, and images with
-            complete security. Access them from anywhere, anytime — safely
-            stored with end-to-end encryption using ImageKit CDN.
+            complete security. Access them from anywhere, anytime - safely
+            stored with end-to-end encryption using <span className="text-[#f70e0e] text-lg">ImageKit</span> CDN.
           </h4>
           <Button
             btnText="Get Started"

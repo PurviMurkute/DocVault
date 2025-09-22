@@ -4,6 +4,8 @@ import dotenv from 'dotenv';
 import passport from './config/passport.js';
 import mongoose from 'mongoose';
 import userRouter from './routes/userRoutes.js';
+import Router from './config/imagekit.js';
+import docRouter from './routes/docRoutes.js';
 
 dotenv.config();
 
@@ -33,6 +35,8 @@ app.get('/health', (req, res) => {
 });
 
 app.use('/api', userRouter);
+app.use('/api', docRouter);
+app.use('/api', Router);
 
 connDB();
 app.listen(PORT, () => {

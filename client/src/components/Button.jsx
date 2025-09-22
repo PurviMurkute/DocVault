@@ -9,7 +9,7 @@ const Button = ({ btnText, icon, variant, btnSize, onclick }) => {
 
   const variants = {
     red: "bg-[#ff1a1a]",
-    blue: "bg-[#0073e6]",
+    blue: "bg-[#026ed9]",
     black: "bg-gray-800",
   };
 
