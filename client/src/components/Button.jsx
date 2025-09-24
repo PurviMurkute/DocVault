@@ -18,14 +18,14 @@ const Button = ({ btnText, icon, variant, btnSize, onclick, className }) => {
 
   const btnSizes = {
     large: "px-9 py-3 rounded-lg",
-    medium: "px-5 py-2 rounded-lg text-sm",
+    medium: "px-5 py-2 rounded-lg",
     roundfull: "px-5 py-1 rounded-full",
     small: "py-2 w-[85%] mx-auto my-3 rounded-lg",
   };
 
   return (
     <button
-      className={`${variants[variant]} ${btnSizes[btnSize]} ${className} font-medium justify-center flex items-center gap-1 hover:scale-95 transition-transform duration-100`}
+      className={`${variants[variant]} ${btnSizes[btnSize]} ${className} text-sm font-medium justify-center flex items-center gap-1 hover:scale-95 transition-transform duration-100`}
       onClick={onclick}
     >
       {btnText} {icon ? icons[icon] : null}

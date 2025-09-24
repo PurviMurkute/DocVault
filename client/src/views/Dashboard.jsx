@@ -20,11 +20,16 @@ const Dashboard = () => {
 
   const [getDocs, setGetDocs] = useState([]);
   const [selected, setSelected] = useState([]);
+  const [selectAll, setSelectAll] = useState(false);
 
   const toggleSelected = (id) => {
     setSelected((prev) =>
       prev.includes(id) ? prev.filter((docId) => docId !== id) : [...prev, id]
     );
+  };
+
+  const toggleSelectAll = () => {
+    setSelectAll(!selectAll);
   };
 
   const uploadRef = useRef();
@@ -117,8 +122,15 @@ const Dashboard = () => {
     getDocuments();
   }, []);
 
-  console.log(selected, selected.length);
-  
+  const handleSelectAll = () => {
+  if (selected.length === getDocs.length) {
+    setSelected([]);
+    setSelectAll(false);
+  } else {
+    setSelected(getDocs.map((doc) => doc._id));
+    setSelectAll(true);
+  }
+};
 
   return (
     <div>
@@ -165,7 +177,20 @@ const Dashboard = () => {
         </IKContext>
       </div>
       <div>
-        <p className="font-bold text-gray-600 px-22 pt-4">Documents</p>
+        <div className="font-bold text-gray-600 px-22 pt-4 flex justify-between items-center">
+          <p>Documents</p>
+          <div className="flex items-center gap-2">
+            <p
+              className={`cursor-pointer ${
+                selectAll
+                  ? "bg-blue-600 border-none"
+                  : "bg-white border-1 border-gray-500"
+              } p-[6px]`}
+              onClick={()=>{toggleSelectAll(), handleSelectAll()}}
+            ></p>
+            <p>Select All</p>
+          </div>
+        </div>
         <div className="flex flex-col items-center gap-5 px-20 py-4">
           {getDocs.map((doc) => {
             const { _id, url, name, uploadedAt } = doc;
