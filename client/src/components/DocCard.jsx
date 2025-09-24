@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 
-const DocCard = ({ url, name, uploadedAt }) => {
+const DocCard = ({ selected, setSelected, url, name, uploadedAt }) => {
   const formattedDate = new Date(uploadedAt).toLocaleDateString("en-GB", {
     day: "2-digit",
     month: "short",
@@ -11,9 +11,17 @@ const DocCard = ({ url, name, uploadedAt }) => {
 
   return (
     <div className="py-4 px-5 border-1 border-gray-400 rounded-lg w-full flex justify-between items-center">
-      <div className="flex flex-col gap-2">
-        <p className="font-bold">{name}</p>
-        <p className="text-sm text-gray-600">{formattedDate}</p>
+      <div className="flex items-center gap-8">
+        <p
+          className={`border-1 border-gray-500 cursor-pointer ${
+            selected ? "bg-blue-600 border-none p-2 rounded-full" : "bg-white p-[5px]"
+          }`}
+          onClick={setSelected}
+        ></p>
+        <div className="flex flex-col gap-2">
+          <p className="font-bold">{name}</p>
+          <p className="text-sm text-gray-600">{formattedDate}</p>
+        </div>
       </div>
       <a
         href={url}

@@ -19,7 +19,7 @@ const Home = () => {
 
   return (
     <div className="min-h-screen">
-      <div className="min-h-screen w-full bg-[#e9f2fa] relative">
+      <div className="min-h-screen w-full bg-white relative">
         <div
           className="absolute inset-0 z-0"
           style={{

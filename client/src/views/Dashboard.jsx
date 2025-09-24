@@ -7,8 +7,9 @@ import Button from "../components/Button";
 import { UserContext } from "../context/UserContext";
 import { useNavigate } from "react-router";
 import DocCard from "../components/DocCard";
+import MiniHeader from "../components/MiniHeader";
 
-const dashboard = () => {
+const Dashboard = () => {
   const [documents, setDocuments] = useState({
     url: "",
     name: "",
@@ -18,6 +19,13 @@ const dashboard = () => {
   });
 
   const [getDocs, setGetDocs] = useState([]);
+  const [selected, setSelected] = useState([]);
+
+  const toggleSelected = (id) => {
+    setSelected((prev) =>
+      prev.includes(id) ? prev.filter((docId) => docId !== id) : [...prev, id]
+    );
+  };
 
   const uploadRef = useRef();
 
@@ -56,6 +64,7 @@ const dashboard = () => {
 
       if (response.data.success) {
         setDocuments(response.data.data);
+        await getDocuments();
         toast.success(response.data.message);
       } else {
         toast.error(response.data.message);
@@ -73,8 +82,6 @@ const dashboard = () => {
       toast.error(error?.response?.data?.message || error?.message);
     }
   };
-
-  console.log(documents);
 
   const getDocuments = async () => {
     try {
@@ -110,9 +117,13 @@ const dashboard = () => {
     getDocuments();
   }, []);
 
+  console.log(selected, selected.length);
+  
+
   return (
     <div>
-      <Header onUploadOnclick = {()=>uploadRef.current?.click()} />
+      <Header onUploadOnclick={() => uploadRef.current?.click()} />
+      <MiniHeader selected={selected} />
       <div>
         <IKContext
           publicKey={import.meta.env.VITE_IMAGEKIT_PUBLIC_KEY}
@@ -126,7 +137,7 @@ const dashboard = () => {
             accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.txt"
             className="hidden"
             onClick={() => {
-              toast.loading("Uploading image...", { id: "upload-toast" });
+              toast.loading("Uploading...", { id: "upload-toast" });
             }}
             onProgress={() => {
               toast.loading(`Uploading...`, { id: "upload-toast" });
@@ -153,16 +164,28 @@ const dashboard = () => {
           />
         </IKContext>
       </div>
-      <div className="flex flex-col items-center gap-5 px-20 py-4">{getDocs.map((doc) => {
-        const {_id, url, name, uploadedAt} = doc;
+      <div>
+        <p className="font-bold text-gray-600 px-22 pt-4">Documents</p>
+        <div className="flex flex-col items-center gap-5 px-20 py-4">
+          {getDocs.map((doc) => {
+            const { _id, url, name, uploadedAt } = doc;
 
-        return (
-          <DocCard key={_id} url={url} name={name} uploadedAt={uploadedAt} />
-        )
-      })}</div>
+            return (
+              <DocCard
+                key={_id}
+                selected={selected.includes(_id)}
+                setSelected={() => toggleSelected(_id)}
+                url={url}
+                name={name}
+                uploadedAt={uploadedAt}
+              />
+            );
+          })}
+        </div>
+      </div>
       <Toaster />
     </div>
   );
 };
 
-export default dashboard;
+export default Dashboard;
