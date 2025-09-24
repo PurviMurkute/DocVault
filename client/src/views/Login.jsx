@@ -26,15 +26,16 @@ const Login = () => {
           password: loginUser.password,
         }
       );
-
+      console.log(response.data);
+      
       if (response.data.success) {
         toast.success(response.data.message);
         setLoginUser(response.data.data);
         setUser(response.data.data);
-        localStorage.setItem("JWT", response.data.token);
+        localStorage.setItem("JWT", response.data.jwtToken);
         localStorage.setItem("user", JSON.stringify(response.data.data));
         setTimeout(() => {
-          navigate("/");
+          navigate("/dashboard");
         }, 2000);
         setLoginUser({
           email: "",

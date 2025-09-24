@@ -1,10 +1,12 @@
 import { CgLogIn } from "react-icons/cg";
 import { MdStart } from "react-icons/md";
+import { MdOutlineCloudUpload } from "react-icons/md";
 
 const Button = ({ btnText, icon, variant, btnSize, onclick }) => {
   const icons = {
     login: <CgLogIn className="text-xl font-bold" />,
     "get started": <MdStart className="text-2xl" />,
+    "upload": <MdOutlineCloudUpload className="text-xl font-bold" />
   };
 
   const variants = {

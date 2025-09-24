@@ -2,15 +2,13 @@ import { Schema, model } from "mongoose";
 
 const documentSchema = new Schema({
     url: {
-        type: String,
-        required: true
+        type: String
     },
     name: {
         type: String
     },
     fileid: {
-        type: String,
-        required: true
+        type: String
     },
     type: {
         type: String

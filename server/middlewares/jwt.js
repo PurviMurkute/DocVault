@@ -15,6 +15,8 @@ const verifyJwt = async (req, res, next) => {
     const decoded = await jwt.verify(token, process.env.JWT_SECRET);
     req.user = decoded;
     next();
+
+    console.log("DECODED:", decoded);
   } catch (error) {
     return res.status(401).json({
       success: false,

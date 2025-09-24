@@ -1,18 +1,11 @@
 import Document from "../models/Document.js";
 
 const postDocuments = async (req, res) => {
-  const { url, name, fileid, type, size, userId, uploadedAt } = req.body;
-
-  if (!url || !fileid) {
-    return res.status(400).json({
-      success: false,
-      data: null,
-      message: "file is required",
-    });
-  }
+  const { url, name, fileid, type, size, uploadedAt } = req.body;
+  const userId = req.user?._id;
 
   try {
-    const newDocument = new Document.create({
+    const newDocument = await Document.create({
       url,
       name,
       fileid,
@@ -22,11 +15,9 @@ const postDocuments = async (req, res) => {
       uploadedAt,
     });
 
-    const savedDoc = await newDocument.save();
-
     return res.status(201).json({
       success: true,
-      data: savedDoc,
+      data: newDocument,
       message: "Document uploaded successfully",
     });
   } catch (error) {
@@ -42,7 +33,7 @@ const getDocumentsbyUser = async (req, res) => {
   const userId = req?.user?._id;
 
   try {
-    const documents = await Document.find({ _id: userId });
+    const documents = await Document.find({ userId }); 
 
     if (documents.length === 0) {
       return res.status(404).json({
