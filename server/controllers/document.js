@@ -33,7 +33,7 @@ const getDocumentsbyUser = async (req, res) => {
   const userId = req?.user?._id;
 
   try {
-    const documents = await Document.find({ userId }); 
+    const documents = await Document.find({ userId });
 
     if (documents.length === 0) {
       return res.status(404).json({
@@ -57,4 +57,57 @@ const getDocumentsbyUser = async (req, res) => {
   }
 };
 
-export { postDocuments, getDocumentsbyUser };
+const editDocuments = async (req, res) => {
+  const { docId } = req.params;
+  const { name } = req.body;
+
+  if (!name) {
+    return res.status(400).json({
+      success: false,
+      data: null,
+      message: "Document name is required",
+    });
+  }
+
+  try {
+    const updatedDocument = await Document.findByIdAndUpdate(
+      docId,
+      { name },
+      { new: true }
+    );
+
+    return res.status(200).json({
+      success: true,
+      data: updatedDocument,
+      message: "File name updated successfully",
+    });
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      data: null,
+      message: error?.message,
+    });
+  }
+};
+
+const deleteDocuments = async (req, res) => {
+  const { docId } = req.params;
+
+  try {
+    const document = await Document.findByIdAndDelete(docId);
+
+    return res.status(200).json({
+      success: true,
+      data: document,
+      message: "File deleted successfully"
+    })
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      data: null,
+      message: error?.message,
+    });
+  }
+}
+
+export { postDocuments, getDocumentsbyUser, editDocuments, deleteDocuments };

@@ -135,6 +135,7 @@ const Dashboard = () => {
   return (
     <div>
       <Header onUploadOnclick={() => uploadRef.current?.click()} />
+        <hr className="mt-15 text-blue-50"/>
       <MiniHeader selected={selected} />
       <div>
         <IKContext
