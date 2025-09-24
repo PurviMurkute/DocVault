@@ -123,20 +123,24 @@ const Dashboard = () => {
   }, []);
 
   const handleSelectAll = () => {
-  if (selected.length === getDocs.length) {
-    setSelected([]);
-    setSelectAll(false);
-  } else {
-    setSelected(getDocs.map((doc) => doc._id));
-    setSelectAll(true);
-  }
-};
+    if (selected.length === getDocs.length) {
+      setSelected([]);
+      setSelectAll(false);
+    } else {
+      setSelected(getDocs.map((doc) => doc._id));
+      setSelectAll(true);
+    }
+  };
 
   return (
     <div>
       <Header onUploadOnclick={() => uploadRef.current?.click()} />
-        <hr className="mt-15 text-blue-50"/>
-      <MiniHeader selected={selected} />
+      <hr className="mt-15 text-blue-50" />
+      <MiniHeader
+        selected={selected}
+        setSelected={setSelected}
+        getDocuments={getDocuments}
+      />
       <div>
         <IKContext
           publicKey={import.meta.env.VITE_IMAGEKIT_PUBLIC_KEY}
@@ -187,27 +191,38 @@ const Dashboard = () => {
                   ? "bg-blue-600 border-none"
                   : "bg-white border-1 border-gray-500"
               } p-[6px]`}
-              onClick={()=>{toggleSelectAll(), handleSelectAll()}}
+              onClick={() => {
+                toggleSelectAll(), handleSelectAll();
+              }}
             ></p>
             <p>Select All</p>
           </div>
         </div>
-        <div className="flex flex-col items-center gap-5 px-20 py-4">
-          {getDocs.map((doc) => {
-            const { _id, url, name, uploadedAt } = doc;
+        {getDocs.length === 0 ? (
+          <div className="flex flex-col justify-center items-center mt-20">
+            <img src="/empty.png" alt="emptybox" className="w-[250px]" />
+            <p className="font-medium font-sans">
+              Your vault is empty - upload a document to get started.
+            </p>
+          </div>
+        ) : (
+          <div className="flex flex-col items-center gap-5 px-20 py-4">
+            {getDocs.map((doc) => {
+              const { _id, url, name, uploadedAt } = doc;
 
-            return (
-              <DocCard
-                key={_id}
-                selected={selected.includes(_id)}
-                setSelected={() => toggleSelected(_id)}
-                url={url}
-                name={name}
-                uploadedAt={uploadedAt}
-              />
-            );
-          })}
-        </div>
+              return (
+                <DocCard
+                  key={_id}
+                  selected={selected.includes(_id)}
+                  setSelected={() => toggleSelected(_id)}
+                  url={url}
+                  name={name}
+                  uploadedAt={uploadedAt}
+                />
+              );
+            })}
+          </div>
+        )}
       </div>
       <Toaster />
     </div>

@@ -23,11 +23,11 @@ const Header = ({ onUploadOnclick }) => {
 
   return (
     <div
-      className={` ${
+      className={`${
         isDashboard
           ? "w-full px-10 py-3"
           : "w-[95%] md:w-[75%] lg:w-[55%] rounded-full m-1 px-5 py-2"
-      } bg-gray-900 z-10 fixed top-0 mx-auto`}
+      } bg-gray-900 z-10 fixed top-0 left-1/2 -translate-x-1/2`}
     >
       <div className="flex justify-between items-center">
         <Link to="/" className="text-white flex items-center gap-2 ">
@@ -57,7 +57,7 @@ const Header = ({ onUploadOnclick }) => {
               btnText={"LogOut"}
               icon={"login"}
               variant={"red"}
-              btnSize={`${isDashboard? "medium" : "roundfull"}`}
+              btnSize={`${isDashboard ? "medium" : "roundfull"}`}
               onclick={handleLogOut}
             />
           </div>

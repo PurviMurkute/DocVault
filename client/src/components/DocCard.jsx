@@ -1,6 +1,5 @@
-import React, { useState } from "react";
 
-const DocCard = ({ selected, setSelected, url, name, uploadedAt }) => {
+const DocCard = ({ _id, selected, setSelected, url, name, uploadedAt }) => {
   const formattedDate = new Date(uploadedAt).toLocaleDateString("en-GB", {
     day: "2-digit",
     month: "short",
@@ -14,7 +13,9 @@ const DocCard = ({ selected, setSelected, url, name, uploadedAt }) => {
       <div className="flex items-center gap-8">
         <p
           className={`border-1 border-gray-500 cursor-pointer ${
-            selected ? "bg-blue-600 border-none p-2 rounded-full" : "bg-white p-[5px]"
+            selected
+              ? "bg-blue-600 border-none p-2 rounded-full"
+              : "bg-white p-[5px]"
           }`}
           onClick={setSelected}
         ></p>
