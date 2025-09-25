@@ -154,7 +154,7 @@ const Dashboard = () => {
             ref={uploadRef}
             id="custom-upload"
             fileName="my-upload.pdf"
-            accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.txt"
+            accept="*/*"
             className="hidden"
             onClick={() => {
               toast.loading("Uploading...", { id: "upload-toast" });
@@ -218,7 +218,7 @@ const Dashboard = () => {
               return (
                 <DocCard
                   key={_id}
-                  selected={selected.includes(_id, name)}
+                  selected={selected.includes(_id)}
                   setSelected={() => toggleSelected(_id)}
                   url={url}
                   name={name}

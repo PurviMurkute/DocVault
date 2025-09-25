@@ -24,9 +24,7 @@ const MiniHeader = ({ selected, setSelected, getDocuments, getDocs }) => {
         })
       );
 
-      setTimeout(() => {
-        getDocuments();
-      }, 1000);
+      await getDocuments();
       toast.success(`${selected.length} document(s) deleted ✅`);
       setSelected([]);
     } catch (error) {

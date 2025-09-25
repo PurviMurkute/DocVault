@@ -13,6 +13,8 @@ const ContextProvider = ({ children }) => {
 
     if (userFromLS && JWT) {
       setUser(userFromLS);
+    }else{
+      setUser(null);
     }
   }, []);
 

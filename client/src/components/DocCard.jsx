@@ -10,14 +10,13 @@ const DocCard = ({ selected, setSelected, url, name, uploadedAt }) => {
 
   return (
     <div className="py-4 px-5 border-1 border-gray-400 rounded-lg w-full flex justify-between items-center">
-      <div className="flex items-center gap-4 md:gap-8">
+      <div className="flex items-center gap-4 md:gap-8 cursor-pointer" onClick={setSelected}>
         <p
-          className={`border-1 border-gray-500 cursor-pointer ${
+          className={`border-1 border-gray-500 ${
             selected
               ? "bg-blue-600 border-none p-2 rounded-full"
               : "bg-white p-[5px]"
           }`}
-          onClick={setSelected}
         ></p>
         <div className="flex flex-col gap-2">
           <p className="font-bold text-sm md:text-md">{name}</p>

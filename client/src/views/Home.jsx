@@ -3,31 +3,33 @@ import Header from "../components/Header";
 import Button from "../components/Button";
 import { useNavigate } from "react-router";
 import { UserContext } from "../context/UserContext";
+import features from "../config/Features";
+import FeatureCard from "../components/FeatureCard";
 
 const Home = () => {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
-    const { user } = useContext(UserContext);
+  const { user } = useContext(UserContext);
 
-    const handliNavigate = () => {
-      if(user){
-        navigate('/dashboard');
-      }else{
-        navigate('/register');
-      }
+  const handliNavigate = () => {
+    if (user) {
+      navigate("/dashboard");
+    } else {
+      navigate("/register");
     }
+  };
 
   return (
-    <div className="min-h-screen">
+    <>
       <div className="min-h-screen w-full bg-white relative">
         <div
           className="absolute inset-0 z-0"
           style={{
             backgroundImage: `
-        linear-gradient(to right, #e2e8f0 1px, transparent 1px),
-        linear-gradient(to bottom, #e2e8f0 1px, transparent 1px)
+        linear-gradient(to right, #f2f2f2 1px, transparent 1px),
+        linear-gradient(to bottom, #f2f2f2 1px, transparent 1px)
       `,
-            backgroundSize: "35px 35px",
+            backgroundSize: "20px 20px",
             WebkitMaskImage:
               "radial-gradient(ellipse 70% 60% at 50% 0%, #000 60%, transparent 100%)",
             maskImage:
@@ -35,25 +37,47 @@ const Home = () => {
           }}
         />
         <Header />
-        <div className="flex flex-col gap-7 justify-center items-center inset-0 w-[95%] md:w-[70%] lg:w-[50%] h-[650px] absolute mx-auto">
-          <h1 className="text-center bg-gradient-to-r from-purple-600 via-orange-400 to-blue-500 inline-block text-transparent bg-clip-text font-extrabold text-4xl">
-            Your Digital Document Locker
-          </h1>
-          <h4 className="font-bold text-center text-gray-700 text-[17px]">
-            Upload your important files, certificates, PDFs, and images with
-            complete security. Access them from anywhere, anytime - safely
-            stored with end-to-end encryption using <span className="text-purple-700 text-lg">ImageKit</span> CDN.
-          </h4>
-          <Button
-            btnText="Get Started"
-            icon="get started"
-            variant="blue"
-            btnSize="large"
-            onclick={handliNavigate}
-          />
+        <div className="flex flex-col md:flex-row justify-evenly items-center inset-0 w-full md:w-[95%] md:min-h-screen absolute mx-auto mt-20 md:mt-0">
+          <div className="flex flex-col gap-4 md:gap-7 lg:w-[32%] px-10 md:px-0">
+            <p className="text-lg font-serif text-center md:text-left">DocVault!</p>
+            <h1 className="text-gray-900 font-bold text-center md:text-left text-3xl md:text-4xl">
+              Securely Store and Access All Your Files Anytime, Anywhere.
+            </h1>
+            <h4 className=" text-gray-600 text-sm md:text-[15px] text-center md:text-left">
+              Upload your important files, certificates, PDFs, and images with
+              complete security. Access them from anywhere, anytime - safely
+              stored with end-to-end encryption using{" "}
+              <span className="text-blue-500 text-lg">ImageKit</span>{" "}
+              CDN.
+            </h4>
+            <div className="block md:flex mx-auto md:mx-0">
+              <Button
+                btnText="Get Started"
+                icon="get started"
+                variant="blue"
+                btnSize="large"
+                onclick={handliNavigate}
+              />
+            </div>
+          </div>
+          <div>
+            <img src="/homeimg.png" alt="img" className="w-[300px] md:w-[480px]" />
+          </div>
         </div>
       </div>
-    </div>
+      <div className="md:px-30 pt-18 md:pt-3">
+        <h4 className="font-bold text-center text-gray-700 text-xl md:text-2xl">Features of DocVault</h4>
+        <div className="flex flex-wrap justify-center md:gap-5 py-10">
+          {features.map((feature, i)=>{
+            const { title, description, icon} = feature;
+
+            return(
+              <FeatureCard key={i} title={title} description={description} icon={icon} />
+            )
+          })}
+        </div>
+      </div>
+    </>
   );
 };
 

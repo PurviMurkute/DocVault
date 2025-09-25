@@ -49,7 +49,7 @@ const Register = () => {
           onSubmit={(e) => {
             e.preventDefault();
           }}
-          className="bg-gradient-to-b from-purple-200 via-pink-200 to-blue-200 w-[450px] flex flex-col justify-center py-15 px-5 rounded-md shadow-md"
+          className="bg-gradient-to-b from-purple-200 via-pink-200 to-blue-200 w-[320px] md:w-[450px] flex flex-col justify-center py-8 md:py-15 px-5 rounded-md shadow-md"
         >
           <h5 className="font-bold text-center text-gray-700 mb-2 text-lg">
             Create Your Free DocVault Account

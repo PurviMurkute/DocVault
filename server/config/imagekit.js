@@ -24,4 +24,4 @@ Router.get('/auth', (req, res) => {
     })
 })
 
-export default Router;
+export {Router, imagekit};

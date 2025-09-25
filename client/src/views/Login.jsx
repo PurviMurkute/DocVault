@@ -59,7 +59,7 @@ const Login = () => {
           onSubmit={(e) => {
             e.preventDefault();
           }}
-          className="bg-gradient-to-b from-purple-200 via-pink-200 to-blue-200 w-[400px] flex flex-col justify-center py-15 px-5 rounded-md shadow-md"
+          className="bg-gradient-to-b from-purple-200 via-pink-200 to-blue-200 w-[310px] md:w-[400px] flex flex-col justify-center py-15 px-5 rounded-md shadow-md"
         >
           <h5 className="font-bold text-center text-gray-700 mb-2 text-lg">Welcome Back to DocVault</h5>
           <p className="font-medium text-center text-gray-600 px-5 text-sm">Securely access your stored documents anytime, anywhere.</p>
