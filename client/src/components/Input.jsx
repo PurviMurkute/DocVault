@@ -1,11 +1,13 @@
 import React from "react";
 import { EyeOff, Eye } from "lucide-react";
 
-const Input = ({ type, placeholder, value, onChange, profileInput, passwordInput, showPass, setShowPass }) => {
+const Input = ({ type, placeholder, value, onChange, passwordInput, showPass, setShowPass }) => {
 
   const togglePass = () => {
     setShowPass(!showPass);
   };
+
+  const isDashboard = location.pathname.startsWith("/dashboard");
 
   return (
     <div className="relative">
@@ -24,9 +26,7 @@ const Input = ({ type, placeholder, value, onChange, profileInput, passwordInput
         placeholder={placeholder}
         value={value}
         onChange={onChange}
-        className={`w-[90%] md:w-[85%] bg-white p-2 ${
-          profileInput ? "mb-4" : "my-4"
-        } border-2 border-slate-200 shadow-lg block mx-auto rounded-md focus:outline-none `}
+        className={`${isDashboard? "w-[100%]": "w-[90%] md:w-[85%]" } bg-white p-2 my-4 border-2 border-slate-200 shadow-lg block mx-auto rounded-md focus:outline-none `}
       />
     </div>
   );

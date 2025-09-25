@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import logo from "../assets/pages.png";
 import Button from "./Button";
 import { Link, useNavigate } from "react-router";
@@ -7,6 +7,14 @@ import toast, { Toaster } from "react-hot-toast";
 
 const Header = ({ onUploadOnclick }) => {
   const navigate = useNavigate();
+  const [isDesktop, setIsDesktop] = useState(window.innerWidth >= 768);
+
+  useEffect(() => {
+    const handleResize = () => setIsDesktop(window.innerWidth >= 768);
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const { user } = useContext(UserContext);
 
@@ -25,8 +33,8 @@ const Header = ({ onUploadOnclick }) => {
     <div
       className={`${
         isDashboard
-          ? "w-full px-10 py-3"
-          : "w-[95%] md:w-[75%] lg:w-[55%] rounded-full m-1 px-5 py-2"
+          ? "w-full px-3 md:px-10 py-3"
+          : "w-[95%] md:w-[75%] lg:w-[55%] rounded-full m-1 px-3 md:px-5 py-2"
       } bg-gray-900 z-10 fixed top-0 left-1/2 -translate-x-1/2`}
     >
       <div className="flex justify-between items-center">
@@ -46,7 +54,7 @@ const Header = ({ onUploadOnclick }) => {
           <div className="flex gap-4">
             {isDashboard ? (
               <Button
-                btnText={"Upload"}
+                btnText={`${isDesktop? "Upload": "" }`}
                 btnSize={"medium"}
                 variant={"blue"}
                 icon={"upload"}
@@ -54,7 +62,7 @@ const Header = ({ onUploadOnclick }) => {
               />
             ) : null}
             <Button
-              btnText={"LogOut"}
+              btnText={`${isDesktop? "LogOut" : ""}`}
               icon={"login"}
               variant={"red"}
               btnSize={`${isDashboard ? "medium" : "roundfull"}`}

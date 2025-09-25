@@ -6,7 +6,7 @@ const Modal = ({ isOpen, onClose, children }) => {
 
   return (
     <div className="fixed inset-0 min-h-screen bg-black/50 flex justify-center items-center">
-      <div className="w-[450px] bg-white px-8 py-8 rounded-lg shadow-md relative">
+      <div className="w-[310px] md:w-[450px] bg-white px-8 py-8 rounded-lg shadow-md relative">
         <IoClose className="absolute top-2 right-2 cursor-pointer w-[25px] h-[25px] text-gray-700" onClick={onClose} />
         {children}
       </div>

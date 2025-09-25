@@ -1,4 +1,5 @@
 import Document from "../models/Document.js";
+import imagekit from '../config/imagekit.js';
 
 const postDocuments = async (req, res) => {
   const { url, name, fileid, type, size, uploadedAt } = req.body;
@@ -94,6 +95,8 @@ const deleteDocuments = async (req, res) => {
   const { docId } = req.params;
 
   try {
+    await imagekit.deleteFile(doc.fileid);
+
     const document = await Document.findByIdAndDelete(docId);
 
     return res.status(200).json({

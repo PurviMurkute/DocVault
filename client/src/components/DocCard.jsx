@@ -1,5 +1,5 @@
 
-const DocCard = ({ _id, selected, setSelected, url, name, uploadedAt }) => {
+const DocCard = ({ selected, setSelected, url, name, uploadedAt }) => {
   const formattedDate = new Date(uploadedAt).toLocaleDateString("en-GB", {
     day: "2-digit",
     month: "short",
@@ -10,7 +10,7 @@ const DocCard = ({ _id, selected, setSelected, url, name, uploadedAt }) => {
 
   return (
     <div className="py-4 px-5 border-1 border-gray-400 rounded-lg w-full flex justify-between items-center">
-      <div className="flex items-center gap-8">
+      <div className="flex items-center gap-4 md:gap-8">
         <p
           className={`border-1 border-gray-500 cursor-pointer ${
             selected
@@ -20,8 +20,8 @@ const DocCard = ({ _id, selected, setSelected, url, name, uploadedAt }) => {
           onClick={setSelected}
         ></p>
         <div className="flex flex-col gap-2">
-          <p className="font-bold">{name}</p>
-          <p className="text-sm text-gray-600">{formattedDate}</p>
+          <p className="font-bold text-sm md:text-md">{name}</p>
+          <p className="text-xs md:text-sm text-gray-600">{formattedDate}</p>
         </div>
       </div>
       <a

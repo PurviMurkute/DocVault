@@ -3,7 +3,6 @@ import Header from "../components/Header";
 import { IKContext, IKUpload } from "imagekitio-react";
 import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
-import Button from "../components/Button";
 import { UserContext } from "../context/UserContext";
 import { useNavigate } from "react-router";
 import DocCard from "../components/DocCard";
@@ -75,7 +74,7 @@ const Dashboard = () => {
         toast.error(response.data.message);
       }
     } catch (error) {
-      if (error?.response?.data?.message == "jwt expired") {
+      if (error?.response?.data?.message == "Invalid or expired token") {
         localStorage.removeItem("JWT");
         localStorage.removeItem("user");
         toast.error("JWT expired, please signin again");
@@ -105,7 +104,10 @@ const Dashboard = () => {
         toast.error(error?.response?.data?.message || error?.message);
       }
     } catch (error) {
-      if (error?.response?.data?.message == "jwt expired") {
+      if (
+        error?.response?.data?.message == "jwt expired" ||
+        "Invalid or expired token"
+      ) {
         localStorage.removeItem("JWT");
         localStorage.removeItem("user");
         toast.error("JWT expired, please signin again");
@@ -140,6 +142,7 @@ const Dashboard = () => {
         selected={selected}
         setSelected={setSelected}
         getDocuments={getDocuments}
+        getDocs={getDocs}
       />
       <div>
         <IKContext
@@ -182,18 +185,20 @@ const Dashboard = () => {
         </IKContext>
       </div>
       <div>
-        <div className="font-bold text-gray-600 px-22 pt-4 flex justify-between items-center">
+        <div className="font-bold text-gray-600 px-2 md:px-22 pt-4 flex justify-between items-center">
           <p>Documents</p>
-          <div className="flex items-center gap-2">
+          <div
+            className="flex items-center gap-2 cursor-pointer"
+            onClick={() => {
+              toggleSelectAll(), handleSelectAll();
+            }}
+          >
             <p
-              className={`cursor-pointer ${
+              className={`${
                 selectAll
                   ? "bg-blue-600 border-none"
                   : "bg-white border-1 border-gray-500"
               } p-[6px]`}
-              onClick={() => {
-                toggleSelectAll(), handleSelectAll();
-              }}
             ></p>
             <p>Select All</p>
           </div>
@@ -206,14 +211,14 @@ const Dashboard = () => {
             </p>
           </div>
         ) : (
-          <div className="flex flex-col items-center gap-5 px-20 py-4">
+          <div className="flex flex-col items-center gap-5 px-2 md:px-20 py-4">
             {getDocs.map((doc) => {
               const { _id, url, name, uploadedAt } = doc;
 
               return (
                 <DocCard
                   key={_id}
-                  selected={selected.includes(_id)}
+                  selected={selected.includes(_id, name)}
                   setSelected={() => toggleSelected(_id)}
                   url={url}
                   name={name}
