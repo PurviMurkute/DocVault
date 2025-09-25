@@ -1,7 +1,7 @@
 import { FaLock, FaBolt, FaFileAlt, FaGlobe, FaFileExport } from "react-icons/fa";
 import { IoDocumentsSharp } from "react-icons/io5";
 
-export const features = [
+const features = [
   {
     title: "Secure Cloud Storage",
     description: "All your files are safely stored and encrypted.",

@@ -31,6 +31,7 @@ const postDocuments = async (req, res) => {
 };
 
 const getDocumentsbyUser = async (req, res) => {
+
   const userId = req?.user?._id;
 
   try {

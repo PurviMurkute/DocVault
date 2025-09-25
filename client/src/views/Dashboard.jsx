@@ -33,7 +33,7 @@ const Dashboard = () => {
 
   const uploadRef = useRef();
 
-  const { user } = useContext(UserContext);
+  const { user, setUser } = useContext(UserContext);
 
   const navigate = useNavigate();
 
@@ -77,6 +77,7 @@ const Dashboard = () => {
       if (error?.response?.data?.message == "Invalid or expired token") {
         localStorage.removeItem("JWT");
         localStorage.removeItem("user");
+        setUser(null);
         toast.error("JWT expired, please signin again");
         setTimeout(() => {
           navigate("/login");
@@ -104,12 +105,10 @@ const Dashboard = () => {
         toast.error(error?.response?.data?.message || error?.message);
       }
     } catch (error) {
-      if (
-        error?.response?.data?.message == "jwt expired" ||
-        "Invalid or expired token"
-      ) {
+      if (error?.response?.data?.message == "Invalid or expired token") {
         localStorage.removeItem("JWT");
         localStorage.removeItem("user");
+        setUser(null);
         toast.error("JWT expired, please signin again");
         setTimeout(() => {
           navigate("/login");
@@ -143,6 +142,7 @@ const Dashboard = () => {
         setSelected={setSelected}
         getDocuments={getDocuments}
         getDocs={getDocs}
+        setGetDocs={setGetDocs}
       />
       <div>
         <IKContext
@@ -157,9 +157,9 @@ const Dashboard = () => {
             accept="*/*"
             className="hidden"
             onClick={() => {
-              toast.loading("Uploading...", { id: "upload-toast" });
+              toast.loading("Please, Select File", { id: "upload-toast" });
             }}
-            onProgress={() => {
+            onSelect={()=>{
               toast.loading(`Uploading...`, { id: "upload-toast" });
             }}
             onError={(err) =>
@@ -200,13 +200,13 @@ const Dashboard = () => {
                   : "bg-white border-1 border-gray-500"
               } p-[6px]`}
             ></p>
-            <p>Select All</p>
+            <p className="text-sm">Select All</p>
           </div>
         </div>
         {getDocs.length === 0 ? (
           <div className="flex flex-col justify-center items-center mt-20">
             <img src="/empty.png" alt="emptybox" className="w-[250px]" />
-            <p className="font-medium font-sans">
+            <p className="font-medium font-sans text-center px-5">
               Your vault is empty - upload a document to get started.
             </p>
           </div>

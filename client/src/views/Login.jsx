@@ -1,24 +1,27 @@
-import React, { useContext, useState} from 'react'
-import Header from '../components/Header';
-import toast, { Toaster } from 'react-hot-toast';
-import { Link, useNavigate } from 'react-router';
-import { UserContext } from '../context/UserContext';
-import Input from '../components/Input';
-import Button from '../components/Button'
-import axios from 'axios';
+import React, { useContext, useEffect, useState } from "react";
+import Header from "../components/Header";
+import toast, { Toaster } from "react-hot-toast";
+import { Link, useNavigate } from "react-router";
+import { UserContext } from "../context/UserContext";
+import Input from "../components/Input";
+import Button from "../components/Button";
+import axios from "axios";
 
 const Login = () => {
-    const [loginUser, setLoginUser] = useState({
+  const [loginUser, setLoginUser] = useState({
     email: "",
     password: "",
   });
 
+  const [loading, setLoading] = useState(false);
+
   const navigate = useNavigate();
 
-  const { user, setUser } = useContext(UserContext);
+  const { setUser } = useContext(UserContext);
 
   const login = async () => {
     try {
+      setLoading(true);
       const response = await axios.post(
         `${import.meta.env.VITE_SERVER_URL}/login`,
         {
@@ -27,7 +30,7 @@ const Login = () => {
         }
       );
       console.log(response.data);
-      
+
       if (response.data.success) {
         toast.success(response.data.message);
         setLoginUser(response.data.data);
@@ -48,8 +51,20 @@ const Login = () => {
       toast.error(
         error?.response?.data?.message || error?.message || "Login failed"
       );
+    } finally {
+      setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (loading) {
+      toast.loading(
+        "Please wait, This might take a few seconds, or this may take longer than usual if the server is waking up."
+      );
+    } else {
+      toast.dismiss();
+    }
+  }, [loading]);
 
   return (
     <div className="min-h-screen relative">
@@ -61,8 +76,12 @@ const Login = () => {
           }}
           className="bg-gradient-to-b from-purple-200 via-pink-200 to-blue-200 w-[310px] md:w-[400px] flex flex-col justify-center py-15 px-5 rounded-md shadow-md"
         >
-          <h5 className="font-bold text-center text-gray-700 mb-2 text-lg">Welcome Back to DocVault</h5>
-          <p className="font-medium text-center text-gray-600 px-5 text-sm">Securely access your stored documents anytime, anywhere.</p>
+          <h5 className="font-bold text-center text-gray-700 mb-2 text-lg">
+            Welcome Back to DocVault
+          </h5>
+          <p className="font-medium text-center text-gray-600 px-5 text-sm">
+            Securely access your stored documents anytime, anywhere.
+          </p>
           <Input
             type="text"
             placeholder="Email"
@@ -86,12 +105,17 @@ const Login = () => {
             variant="black"
             onclick={login}
           />
-          <p className="text-center font-medium text-gray-800 py-2 text-[15px]">Don't have an accout? <Link to={'/register'} className='text-blue-600'>Register now</Link></p>
+          <p className="text-center font-medium text-gray-800 py-2 text-[15px]">
+            Don't have an accout?{" "}
+            <Link to={"/register"} className="text-blue-600">
+              Register now
+            </Link>
+          </p>
         </form>
       </div>
       <Toaster />
     </div>
-  )
-}
+  );
+};
 
-export default Login
+export default Login;

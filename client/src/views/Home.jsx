@@ -5,6 +5,9 @@ import { useNavigate } from "react-router";
 import { UserContext } from "../context/UserContext";
 import features from "../config/Features";
 import FeatureCard from "../components/FeatureCard";
+import Reviews from "../config/Reviews";
+import ReviewCard from "../components/ReviewCard";
+import Footer from "../components/Footer";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -37,7 +40,7 @@ const Home = () => {
           }}
         />
         <Header />
-        <div className="flex flex-col md:flex-row justify-evenly items-center inset-0 w-full md:w-[95%] md:min-h-screen absolute mx-auto mt-20 md:mt-0">
+        <div name="home" className="flex flex-col md:flex-row justify-evenly items-center inset-0 w-full md:w-[95%] md:min-h-screen absolute mx-auto mt-20 md:mt-0">
           <div className="flex flex-col gap-4 md:gap-7 lg:w-[32%] px-10 md:px-0">
             <p className="text-lg font-serif text-center md:text-left">DocVault!</p>
             <h1 className="text-gray-900 font-bold text-center md:text-left text-3xl md:text-4xl">
@@ -65,7 +68,7 @@ const Home = () => {
           </div>
         </div>
       </div>
-      <div className="md:px-30 pt-18 md:pt-3">
+      <div name="features" className="md:px-30 pt-18 md:pt-3">
         <h4 className="font-bold text-center text-gray-700 text-xl md:text-2xl">Features of DocVault</h4>
         <div className="flex flex-wrap justify-center md:gap-5 py-10">
           {features.map((feature, i)=>{
@@ -77,6 +80,23 @@ const Home = () => {
           })}
         </div>
       </div>
+      {/* <div className="md:px-30 pt-18 md:pt-3">
+        <h4 className="font-bold text-center text-gray-700 text-xl md:text-2xl">Workflow</h4>
+      </div> */}
+      <div name="reviews" className="px-5 md:px-30 pt-3">
+        <h4 className="font-bold text-center text-gray-700 text-xl md:text-2xl">Your Experience, Our Pride</h4>
+        <p className="text-center text-gray-600 pt-1">Here’s what our users think about using DocVault to securely store their files.</p>
+        <div className="flex gap-4 py-10 md:py-15 overflow-x-auto whitespace-nowrap scrollbar-hide">
+          {Reviews.map((review, i)=>{
+            const {image, name, text, ratings} = review;
+
+            return(
+              <ReviewCard key={i} image={image} name={name} text={text} ratings={ratings} />
+            )
+          })}
+        </div>
+      </div>
+      <Footer />
     </>
   );
 };

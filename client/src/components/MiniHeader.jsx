@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { IoMdHome } from "react-icons/io";
 import Button from "./Button";
 import { IoMdRefreshCircle } from "react-icons/io";
@@ -7,30 +7,38 @@ import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
 import Modal from "./Modal";
 import Input from "./Input";
+import { UserContext } from "../context/UserContext";
 
-const MiniHeader = ({ selected, setSelected, getDocuments, getDocs }) => {
+const MiniHeader = ({ selected, setSelected, getDocuments, getDocs, setGetDocs }) => {
   const navigate = useNavigate();
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [doc, setDoc] = useState({ name: "" });
 
+  const { setUser } = useContext(UserContext);
+
   const deleteFile = async () => {
     try {
-      await selected.map((id) =>
-        axios.delete(`${import.meta.env.VITE_SERVER_URL}/docs/${id}`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("JWT")}`,
-          },
-        })
+      await Promise.all(
+        selected.map((id) =>
+          axios.delete(`${import.meta.env.VITE_SERVER_URL}/docs/${id}`, {
+            headers: { Authorization: `Bearer ${localStorage.getItem("JWT")}` },
+          })
+        )
       );
 
-      await getDocuments();
+      setGetDocs((prevDocs) => prevDocs.filter((doc) => !selected.includes(doc._id)));  
+
+      setTimeout(() => {
+          getDocuments();
+        }, 1000);
       toast.success(`${selected.length} document(s) deleted ✅`);
       setSelected([]);
     } catch (error) {
       if (error?.response?.data?.message == "Invalid or expired token") {
         localStorage.removeItem("JWT");
         localStorage.removeItem("user");
+        setUser(null);
         toast.error("JWT expired, please signin again");
         setTimeout(() => {
           navigate("/login");
@@ -89,6 +97,7 @@ const MiniHeader = ({ selected, setSelected, getDocuments, getDocs }) => {
       if (error?.response?.data?.message == "Invalid or expired token") {
         localStorage.removeItem("JWT");
         localStorage.removeItem("user");
+        setUser(null);
         toast.error("JWT expired, please signin again");
         setTimeout(() => {
           navigate("/login");

@@ -4,6 +4,7 @@ import Button from "./Button";
 import { Link, useNavigate } from "react-router";
 import { UserContext } from "../context/UserContext";
 import toast, { Toaster } from "react-hot-toast";
+import { Link as ScrollLink } from 'react-scroll'
 
 const Header = ({ onUploadOnclick }) => {
   const navigate = useNavigate();
@@ -16,13 +17,15 @@ const Header = ({ onUploadOnclick }) => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const { user } = useContext(UserContext);
+  const { user, setUser } = useContext(UserContext);
 
   const isDashboard = location.pathname.startsWith("/dashboard");
+  const isHomePage = window.location.pathname === "/";
 
   const handleLogOut = () => {
     localStorage.removeItem("JWT");
     localStorage.removeItem("user");
+    setUser(null);
     toast.success("LogOut successfully");
     setTimeout(() => {
       navigate("/login");
@@ -36,8 +39,14 @@ const Header = ({ onUploadOnclick }) => {
       <div className="flex justify-between items-center">
         <Link to="/" className="flex items-center gap-2 ">
           <img src={logo} alt="logo" className="w-[30px]" />
-          <p className="text-2xl font-bold font-serif">DocVault</p>
+          <p className="text-xl md:text-2xl font-bold font-serif">DocVault</p>
         </Link>
+        <div className={`${isHomePage? "hidden md:flex": "hidden"} justify-between items-center gap-8 text-gray-700 text-md font-medium mt-1`}>
+          <ScrollLink to="home" smooth={true} duration={500} className="cursor-pointer">Home</ScrollLink>
+          <ScrollLink to="features" smooth={true} duration={500} className="cursor-pointer">Features</ScrollLink>
+          <ScrollLink to="workflow" smooth={true} duration={500} className="cursor-pointer">Workflow</ScrollLink>
+          <ScrollLink to="reviews" smooth={true} duration={500} className="cursor-pointer">Reviews</ScrollLink>
+        </div>
         {!user ? (
           <Button
             btnText="Login"
