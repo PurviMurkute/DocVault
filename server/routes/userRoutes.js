@@ -21,7 +21,7 @@ userRouter.get(
   (req, res) => {
     try {
       const token = jwt.sign(
-        { _id: req.user._id, fullname: req.user.username, email: req.user.email },
+        { _id: req.user._id, fullname: req.user.fullname, email: req.user.email },
         process.env.JWT_SECRET,
         { expiresIn: "7d" }
       );

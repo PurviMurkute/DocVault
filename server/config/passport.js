@@ -47,7 +47,7 @@ passport.use(
         if (!user) {
           user = await User.create({
             googleId: profile.id,
-            username: profile.displayName,
+            fullname: profile.displayName,
             email: email
           });
         }

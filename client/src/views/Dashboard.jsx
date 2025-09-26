@@ -1,5 +1,4 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
-import Header from "../components/Header";
 import { IKContext, IKUpload } from "imagekitio-react";
 import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
@@ -37,7 +36,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth < 768) {
+      if (window.innerWidth < 1200) {
         setIsSidebarOpen(false);
       } else {
         setIsSidebarOpen(true);

@@ -14,6 +14,7 @@ const Login = () => {
   });
 
   const [loading, setLoading] = useState(false);
+  const [showPass, setShowPass] = useState(false);
 
   const navigate = useNavigate();
 
@@ -88,6 +89,9 @@ const Login = () => {
             variant={"outline"}
             icon={"google"}
             iconPosition={"left"}
+            onclick={() => {
+              window.open(`${import.meta.env.VITE_SERVER_URL}/google`, "_self");
+            }}
           />
           <div className="flex items-center w-[90%] mx-auto my-2">
             <div className="h-[0.5px] flex-1 bg-gray-500" />
@@ -103,9 +107,12 @@ const Login = () => {
             }}
           />
           <Input
-            type="password"
+            type={showPass ? "text" : "password"}
             placeholder="Password"
             value={loginUser.password}
+            passwordInput={true}
+            showPass={showPass}
+            setShowPass={setShowPass}
             onChange={(e) => {
               setLoginUser({ ...loginUser, password: e.target.value });
             }}

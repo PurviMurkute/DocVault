@@ -14,6 +14,8 @@ const Register = () => {
     password: "",
   });
 
+  const [showPass, setShowPass] = useState(false);
+
   const register = async () => {
     try {
       const response = await axios.post(
@@ -64,6 +66,9 @@ const Register = () => {
             variant={"outline"}
             icon={"google"}
             iconPosition={"left"}
+            onclick={() => {
+              window.open(`${import.meta.env.VITE_SERVER_URL}/google`, "_self");
+            }}
           />
           <div className="flex items-center w-[90%] mx-auto my-2">
             <div className="h-[0.5px] flex-1 bg-gray-500" />
@@ -87,9 +92,12 @@ const Register = () => {
             }}
           />
           <Input
-            type="password"
+            type={showPass ? "text" : "password"}
             placeholder="Password"
             value={registerUser.password}
+            passwordInput={true}
+            showPass={showPass}
+            setShowPass={setShowPass}
             onChange={(e) => {
               setRegisterUser({ ...registerUser, password: e.target.value });
             }}

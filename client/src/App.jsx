@@ -4,6 +4,7 @@ import Home from './views/Home'
 import Register from './views/Register';
 import Login from './views/Login';
 import Dashboard from './views/Dashboard';
+import GoogleLogin from './components/GoogleLogin';
 
 const App = () => {
   return (
@@ -12,6 +13,7 @@ const App = () => {
       <Route path='/register' element={<Register />}></Route>
       <Route path='/login' element={<Login />}></Route>
       <Route path='/dashboard' element={<Dashboard />}></Route>
+      <Route path='/google-success' element={<GoogleLogin />}></Route>
     </Routes>
   )
 }
