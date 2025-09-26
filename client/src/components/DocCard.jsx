@@ -9,8 +9,11 @@ const DocCard = ({ selected, setSelected, url, name, uploadedAt }) => {
   });
 
   return (
-    <div className="py-4 px-5 border-1 border-gray-400 rounded-lg w-full flex justify-between items-center">
-      <div className="flex items-center gap-4 md:gap-8 cursor-pointer" onClick={setSelected}>
+    <div className="py-4 px-5 border-1 border-gray-400 rounded-lg shrink-0 w-full flex justify-between items-center">
+      <div
+        className="flex items-center gap-4 md:gap-8 cursor-pointer"
+        onClick={setSelected}
+      >
         <p
           className={`border-1 border-gray-500 ${
             selected
@@ -19,18 +22,18 @@ const DocCard = ({ selected, setSelected, url, name, uploadedAt }) => {
           }`}
         ></p>
         <div className="flex flex-col gap-2">
-          <p className="font-bold text-sm md:text-md">{name}</p>
+          <p className="font-bold wrap-break-word text-sm md:text-md">{name}</p>
           <p className="text-xs md:text-sm text-gray-600">{formattedDate}</p>
         </div>
       </div>
-      <a
-        href={url}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="text-blue-500 hover:underline"
-      >
-        View
-      </a>
+        <a
+          href={url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-blue-500 hover:underline"
+        >
+          View
+        </a>
     </div>
   );
 };

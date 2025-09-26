@@ -1,11 +1,25 @@
 import { useEffect } from "react";
 import { useState } from "react";
 import { createContext } from "react";
+import toast, { Toaster } from "react-hot-toast";
+import { useNavigate } from "react-router";
 
 const UserContext = createContext();
 
 const ContextProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+
+  const navigate = useNavigate();
+  
+const handleLogOut = () => {
+    localStorage.removeItem("JWT");
+    localStorage.removeItem("user");
+    setUser(null);
+    toast.success("LogOut successfully");
+    setTimeout(() => {
+      navigate("/login");
+    }, 1000);
+  };
 
   useEffect(() => {
     const userFromLS = JSON.parse(localStorage.getItem("user"));
@@ -21,10 +35,11 @@ const ContextProvider = ({ children }) => {
   const contextValue = {
     user,
     setUser,
+    handleLogOut
   };
 
   return (
-    <UserContext.Provider value={contextValue}>{children}</UserContext.Provider>
+    <UserContext.Provider value={contextValue}>{children}<Toaster/></UserContext.Provider>
   );
 };
 

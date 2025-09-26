@@ -66,9 +66,9 @@ const Register = () => {
             iconPosition={"left"}
           />
           <div className="flex items-center w-[90%] mx-auto my-2">
-            <div className="h-[1px] flex-1 bg-gray-500" />
+            <div className="h-[0.5px] flex-1 bg-gray-500" />
             <span className="mx-3 text-sm text-gray-500">OR</span>
-            <div className="h-[1px] flex-1 bg-gray-500" />
+            <div className="h-[0.5px] flex-1 bg-gray-500" />
           </div>
           <Input
             type="text"

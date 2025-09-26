@@ -4,7 +4,7 @@ import Button from "./Button";
 import { Link, useNavigate } from "react-router";
 import { UserContext } from "../context/UserContext";
 import toast, { Toaster } from "react-hot-toast";
-import { Link as ScrollLink } from "react-scroll";
+import { Link as ScrollLink } from 'react-scroll'
 
 const Header = () => {
   const navigate = useNavigate();
@@ -17,19 +17,10 @@ const Header = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const { user, setUser } = useContext(UserContext);
-
+  const { user, handleLogOut } = useContext(UserContext);
+  
   const isHomePage = window.location.pathname === "/";
 
-  const handleLogOut = () => {
-    localStorage.removeItem("JWT");
-    localStorage.removeItem("user");
-    setUser(null);
-    toast.success("LogOut successfully");
-    setTimeout(() => {
-      navigate("/login");
-    }, 1000);
-  };
 
   return (
     <div
@@ -40,43 +31,11 @@ const Header = () => {
           <img src={logo} alt="logo" className="w-[30px]" />
           <p className="text-xl md:text-2xl font-bold font-serif">DocVault</p>
         </Link>
-        <div
-          className={`${
-            isHomePage ? "hidden md:flex" : "hidden"
-          } justify-between items-center gap-8 text-gray-700 text-md font-medium mt-1`}
-        >
-          <ScrollLink
-            to="home"
-            smooth={true}
-            duration={500}
-            className="cursor-pointer"
-          >
-            Home
-          </ScrollLink>
-          <ScrollLink
-            to="features"
-            smooth={true}
-            duration={500}
-            className="cursor-pointer"
-          >
-            Features
-          </ScrollLink>
-          <ScrollLink
-            to="workflow"
-            smooth={true}
-            duration={500}
-            className="cursor-pointer"
-          >
-            Workflow
-          </ScrollLink>
-          <ScrollLink
-            to="reviews"
-            smooth={true}
-            duration={500}
-            className="cursor-pointer"
-          >
-            Reviews
-          </ScrollLink>
+        <div className={`${isHomePage? "hidden md:flex": "hidden"} justify-between items-center gap-8 text-gray-700 text-md font-medium mt-1`}>
+          <ScrollLink to="home" smooth={true} duration={500} className="cursor-pointer">Home</ScrollLink>
+          <ScrollLink to="features" smooth={true} duration={500} className="cursor-pointer">Features</ScrollLink>
+          <ScrollLink to="workflow" smooth={true} duration={500} className="cursor-pointer">Workflow</ScrollLink>
+          <ScrollLink to="reviews" smooth={true} duration={500} className="cursor-pointer">Reviews</ScrollLink>
         </div>
         {!user ? (
           <Button
@@ -88,14 +47,14 @@ const Header = () => {
             onclick={() => navigate("/login")}
           />
         ) : (
-          <Button
-            btnText={`${isDesktop ? "LogOut" : ""}`}
-            icon={"login"}
-            iconPosition={"right"}
-            variant={"red"}
-            btnSize={"medium"}
-            onclick={handleLogOut}
-          />
+            <Button
+              btnText={`${isDesktop? "LogOut" : ""}`}
+              icon={"login"}
+              iconPosition={"right"}
+              variant={"red"}
+              btnSize={"medium"}
+              onclick={handleLogOut}
+            />
         )}
       </div>
       <Toaster />

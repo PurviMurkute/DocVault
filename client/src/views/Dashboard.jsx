@@ -10,18 +10,14 @@ import MiniHeader from "../components/MiniHeader";
 import Sidebar from "../components/Sidebar";
 
 const Dashboard = () => {
-  const [documents, setDocuments] = useState({
-    url: "",
-    name: "",
-    fileid: "",
-    type: "",
-    size: "",
-  });
+  const [documents, setDocuments] = useState([]);
 
   const [getDocs, setGetDocs] = useState([]);
   const [selected, setSelected] = useState([]);
   const [selectAll, setSelectAll] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [fileName, setFileName] = useState(null);
+  const [selectedMenu, setSelectedMenu] = useState("All Docs");
 
   const toggleSelected = (id) => {
     setSelected((prev) =>
@@ -154,9 +150,12 @@ const Dashboard = () => {
     <div className="flex">
       <div className={`${isSidebarOpen ? "w-1/6" : "w-0"}`}>
         <Sidebar
+          getDocs={getDocs}
           isSidebarOpen={isSidebarOpen}
           setIsSidebarOpen={setIsSidebarOpen}
           onUploadOnclick={() => uploadRef.current?.click()}
+          selectedMenu={selectedMenu}
+          setSelectedMenu={setSelectedMenu}
         />
       </div>
       <div className="w-full">
@@ -179,14 +178,23 @@ const Dashboard = () => {
             <IKUpload
               ref={uploadRef}
               id="custom-upload"
-              fileName="my-upload.pdf"
+              multiple={true}
+              fileName={fileName}
               accept="*/*"
               className="hidden"
-              onClick={() => {
-                toast.loading("Please, Select File", { id: "upload-toast" });
+              onSelect={(event) => {
+                const files = Array.from(event.target.files);
+                if (files.length > 0) {
+                  toast.loading(`Uploading ${files.length} file(s)...`, {
+                    id: "upload-toast",
+                  });
+                  files.forEach((file) => {
+                    setFileName(file.name); // use original name for each file
+                  });
+                }
               }}
-              onSelect={() => {
-                toast.loading(`Uploading...`, { id: "upload-toast" });
+              onUploadStart={() => {
+                toast.loading("Uploading...", { id: "upload-toast" });
               }}
               onError={(err) =>
                 toast.error("Upload failed ❌", err, { id: "upload-toast" })
@@ -199,19 +207,21 @@ const Dashboard = () => {
                   type: res.fileType,
                   size: res.size,
                 };
-                setDocuments(docData);
+
+                setGetDocs((prev) => [...prev, docData]); // ✅ store multiple docs
                 uploadDoc(docData);
-                console.log(res);
 
                 setTimeout(() => {
-                  toast.success("Upload successful ✅", { id: "upload-toast" });
+                  toast.success(`${res.name} uploaded ✅`, {
+                    id: "upload-toast",
+                  });
                 }, 1000);
               }}
             />
           </IKContext>
         </div>
         <div>
-          <div className="font-bold text-gray-600 px-2 md:px-22 pt-4 flex justify-between items-center">
+          <div className="font-bold text-gray-600 px-2 md:px-15 pt-4 flex justify-between items-center">
             <p>Documents</p>
             <div
               className="flex items-center gap-2 cursor-pointer"
@@ -237,19 +247,47 @@ const Dashboard = () => {
               </p>
             </div>
           ) : (
-            <div className="flex flex-col items-center gap-5 px-2 md:px-20 py-4">
+            <div className="flex flex-col items-center gap-5 px-2 md:px-13 py-4">
               {getDocs.map((doc) => {
                 const { _id, url, name, uploadedAt } = doc;
 
+                const ext = name.split(".").pop();
+
                 return (
-                  <DocCard
-                    key={_id}
-                    selected={selected.includes(_id)}
-                    setSelected={() => toggleSelected(_id)}
-                    url={url}
-                    name={name}
-                    uploadedAt={uploadedAt}
-                  />
+                  <>
+                    {selectedMenu === "All Docs" ? (
+                      <DocCard
+                        key={_id}
+                        selected={selected.includes(_id)}
+                        setSelected={() => toggleSelected(_id)}
+                        url={url}
+                        name={name}
+                        uploadedAt={uploadedAt}
+                      />
+                    ) : selectedMenu === "Images" &&
+                      (ext === "png" ||
+                        ext === "jpg" ||
+                        ext === "jpeg" ||
+                        ext === "webp") ? (
+                      <DocCard
+                        key={_id}
+                        selected={selected.includes(_id)}
+                        setSelected={() => toggleSelected(_id)}
+                        url={url}
+                        name={name}
+                        uploadedAt={uploadedAt}
+                      />
+                    ) : selectedMenu === "PDF's" && ext === "pdf" ? (
+                      <DocCard
+                        key={_id}
+                        selected={selected.includes(_id)}
+                        setSelected={() => toggleSelected(_id)}
+                        url={url}
+                        name={name}
+                        uploadedAt={uploadedAt}
+                      />
+                    ) : null}
+                  </>
                 );
               })}
             </div>

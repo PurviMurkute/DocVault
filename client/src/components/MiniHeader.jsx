@@ -64,7 +64,7 @@ const MiniHeader = ({
     const selectedDoc = getDocs.find((d) => d._id === selected[0]);
     if (!selectedDoc) return toast.error("Document not found");
 
-    // ✅ Split name into baseName and extension
+    // Split name into baseName and extension
     const lastDotIndex = selectedDoc.name.lastIndexOf(".");
     const baseName =
       lastDotIndex !== -1
@@ -130,48 +130,67 @@ const MiniHeader = ({
   };
 
   return (
-    <div className="flex justify-between items-center px-3 md:px-5 py-2 border-b-1 border-gray-300">
-      <div className={`flex items-center gap-2 ${isSidebarOpen? "ps-5": "ps-0"}`}>
-        {isSidebarOpen ? null : (
-          <RiMenu4Fill
-            className="text-gray-600 text-xl cursor-pointer"
-            onClick={() => setIsSidebarOpen(true)}
-          />
-        )}
-        <p
-          className="flex justify-between items-center gap-1 md:gap-2 text-gray-600 cursor-pointer hover:text-gray-700"
-          onClick={() => navigate("/")}
+    <div className="flex flex-col">
+      <div className="flex justify-between items-center px-2 md:px-5 py-2 border-b-1 border-gray-300">
+        <div
+          className={`flex items-center gap-1 ${
+            isSidebarOpen ? "ps-5" : "ps-0"
+          }`}
         >
-          <IoMdHome className="text-lg" />
-          <span className="text-sm">Home</span>
-        </p>
+          {isSidebarOpen ? null : (
+            <RiMenu4Fill
+              className="text-gray-600 text-xl cursor-pointer"
+              onClick={() => setIsSidebarOpen(true)}
+            />
+          )}
+          <p
+            className="flex justify-between items-center gap-1 md:gap-2 text-gray-600 cursor-pointer hover:text-gray-700"
+            onClick={() => navigate("/")}
+          >
+            <IoMdHome className="text-lg" />
+            <span className="text-sm">Home</span>
+          </p>
+        </div>
+        <div className="flex gap-1 md:gap-2 items-center">
+          <IoMdRefreshCircle
+            className="font-bold text-2xl md:mr-1 text-gray-700 cursor-pointer"
+            onClick={() => window.location.reload()}
+          />
+          <Button
+            btnText={"Delete"}
+            btnSize={"roundfull"}
+            variant={"outline"}
+            className={`w-[80px] ${
+              !selected || selected.length === 0
+                ? "cursor-not-allowed"
+                : "cursor-pointer border-red-700 text-red-600"
+            }`}
+            onclick={() => setIsDeleteModalOpen(true)}
+          />
+          <Button
+            btnText={"Edit"}
+            btnSize={"roundfull"}
+            variant={"outline"}
+            className={`w-[80px] ${
+              !selected || selected.length === 0 || selected.length > 1
+                ? "cursor-not-allowed"
+                : "cursor-pointer border-green-700 text-green-600"
+            }`}
+            onclick={openEditModal}
+          />
+        </div>
       </div>
-      <div className="flex gap-1 md:gap-2 items-center">
-        <IoMdRefreshCircle
-          className="font-bold text-2xl md:mr-1 text-gray-700 cursor-pointer"
-          onClick={() => window.location.reload()}
-        />
+      <div className="flex justify-between items-center px-1 md:px-5 border-b-1 border-gray-300">
+        <div className={`${isSidebarOpen ? "ps-5" : "ps-0"} w-[75%] md:w-[70%]`}>
+          <Input type={"text"} placeholder={`🔎 Search your docs here...`} />
+        </div>
         <Button
-          btnText={"Delete"}
+          btnText={`${window.innerWidth >= 768 ? "Move to Importants": "" }`}
           btnSize={"roundfull"}
           variant={"outline"}
-          className={`${
-            !selected || selected.length === 0
-              ? "cursor-not-allowed"
-              : "cursor-pointer border-red-700 text-red-600"
-          }`}
-          onclick={() => setIsDeleteModalOpen(true)}
-        />
-        <Button
-          btnText={"Edit"}
-          btnSize={"roundfull"}
-          variant={"outline"}
-          className={`${
-            !selected || selected.length === 0 || selected.length > 1
-              ? "cursor-not-allowed"
-              : "cursor-pointer border-green-700 text-green-600"
-          }`}
-          onclick={openEditModal}
+          icon={"star"}
+          iconPosition={"left"}
+          className={"cursor-pointer md:py-1 text-gray-500"}
         />
       </div>
       <Modal

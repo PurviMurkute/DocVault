@@ -26,7 +26,7 @@ const Input = ({ type, placeholder, value, onChange, passwordInput, showPass, se
         placeholder={placeholder}
         value={value}
         onChange={onChange}
-        className={`${isDashboard? "w-[100%]": "w-[90%] md:w-[85%]" } bg-white p-2 my-4 border-2 border-slate-200 shadow-lg block mx-auto rounded-md focus:outline-none `}
+        className={`${isDashboard? "w-[100%] my-2 px-3 py-[5px]": "w-[90%] md:w-[85%] shadow-lg rounded-md my-4 p-2" } bg-white border-1 border-gray-300 block mx-auto focus:outline-none `}
       />
     </div>
   );

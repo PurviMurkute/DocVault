@@ -1,14 +1,34 @@
 import logo from "../assets/pages.png";
-import { Link, useNavigate } from "react-router";
+import { Link } from "react-router";
 import { IoMdCloseCircle } from "react-icons/io";
 import Button from "./Button";
-import { useState } from "react";
+import { useContext } from "react";
 import { IoDocumentsSharp, IoTrashSharp } from "react-icons/io5";
 import { IoMdImages } from "react-icons/io";
 import { MdPictureAsPdf } from "react-icons/md";
 import { AiFillStar } from "react-icons/ai";
+import { UserContext } from "../context/UserContext";
 
-const Sidebar = ({ isSidebarOpen, setIsSidebarOpen, onUploadOnclick }) => {
+const Sidebar = ({
+  isSidebarOpen,
+  setIsSidebarOpen,
+  onUploadOnclick,
+  selectedMenu,
+  setSelectedMenu,
+}) => {
+  const { handleLogOut } = useContext(UserContext);
+
+  const menuItems = [
+    { icon: <IoDocumentsSharp className="text-gray-300" />, label: "All Docs" },
+    { icon: <IoMdImages className="text-blue-400" />, label: "Images" },
+    { icon: <MdPictureAsPdf className="text-red-300" />, label: "PDF's" },
+    {
+      icon: <IoTrashSharp className="text-red-400" />,
+      label: "Recently Deleted",
+    },
+    { icon: <AiFillStar className="text-yellow-600" />, label: "Important's" },
+  ];
+
   return (
     <>
       <div
@@ -25,7 +45,7 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen, onUploadOnclick }) => {
                 </p>
               </Link>
               <IoMdCloseCircle
-                className="text-gray-200 text-2xl cursor-pointer"
+                className="block md:hidden text-gray-200 text-2xl cursor-pointer"
                 onClick={() => setIsSidebarOpen(false)}
               />
             </div>
@@ -39,26 +59,22 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen, onUploadOnclick }) => {
               onclick={onUploadOnclick}
             />
             <hr className="text-gray-600" />
-            <p className="flex items-center gap-2 font-medium py-1">
-              <IoDocumentsSharp className="text-gray-300" />
-              <span>All Docs</span>
-            </p>
-            <p className="flex items-center gap-2 font-medium py-1">
-              <IoMdImages className="text-blue-400" />
-              <span>Images</span>
-            </p>
-            <p className="flex items-center gap-2 font-medium py-1">
-              <MdPictureAsPdf className="text-red-300" />
-              <span>PDF's</span>
-            </p>
-            <p className="flex items-center gap-2 font-medium py-1">
-              <IoTrashSharp className="text-red-400" />
-              <span>Recently deleted</span>
-            </p>
-            <p className="flex items-center gap-2 font-medium py-1">
-              <AiFillStar className="text-yellow-600" />
-              <span>Important's</span>
-            </p>
+            <div className="flex flex-col gap-3">
+              {menuItems.map((item, i) => (
+                <p
+                  key={i}
+                  className={`${
+                    selectedMenu === item.label
+                      ? "bg-gray-600"
+                      : "text-gray-200"
+                  } flex items-center gap-2 font-medium py-1 hover:bg-gray-600 rounded-lg cursor-pointer px-2 transition`}
+                  onClick={() => setSelectedMenu(item.label)}
+                >
+                  {item.icon}
+                  <span>{item.label}</span>
+                </p>
+              ))}
+            </div>
           </div>
           <div className="flex flex-col">
             <hr className="text-gray-600" />
@@ -66,7 +82,8 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen, onUploadOnclick }) => {
               btnText={"LogOut"}
               icon={"login"}
               iconPosition={"left"}
-              className={"py-4 cursor-pointer"}
+              onclick={handleLogOut}
+              className={"py-4 px-2 cursor-pointer rounded-md hover:bg-red-600"}
             />
           </div>
         </div>

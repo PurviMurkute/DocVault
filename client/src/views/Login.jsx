@@ -74,7 +74,7 @@ const Login = () => {
           onSubmit={(e) => {
             e.preventDefault();
           }}
-          className="bg-gradient-to-b from-purple-200 via-pink-200 to-blue-200 w-full md:w-[400px] flex flex-col justify-center py-15 px-5 rounded-md shadow-md"
+          className="bg-gradient-to-b from-purple-200 via-pink-200 to-blue-200 w-full md:w-[420px] flex flex-col justify-center py-15 px-5 rounded-md shadow-md"
         >
           <h5 className="font-bold text-center text-gray-700 mb-2 text-lg">
             Welcome Back to DocVault
@@ -90,9 +90,9 @@ const Login = () => {
             iconPosition={"left"}
           />
           <div className="flex items-center w-[90%] mx-auto my-2">
-            <div className="h-[1px] flex-1 bg-gray-500" />
+            <div className="h-[0.5px] flex-1 bg-gray-500" />
             <span className="mx-3 text-sm text-gray-500">OR</span>
-            <div className="h-[1px] flex-1 bg-gray-500" />
+            <div className="h-[0.5px] flex-1 bg-gray-500" />
           </div>
           <Input
             type="text"
