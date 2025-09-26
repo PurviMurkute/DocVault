@@ -104,4 +104,30 @@ const loginUser = async (req, res, next) => {
   })(req, res, next);
 };
 
-export { registerUser, loginUser };
+const getCurrentUser = (req, res) => {
+  try {
+    let user = req.user;
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        data: null,
+        message: "User not found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      data: user,
+      message: "User fetched successfully",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      data: null,
+      message: error.message,
+    });
+  }
+};
+
+export { registerUser, loginUser, getCurrentUser };
