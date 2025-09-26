@@ -57,6 +57,7 @@ const Home = () => {
               <Button
                 btnText="Get Started"
                 icon="get started"
+                iconPosition={"right"}
                 variant="blue"
                 btnSize="large"
                 onclick={handliNavigate}

@@ -24,16 +24,16 @@ const Footer = () => {
             Access them anytime, anywhere.
           </p>
           <div className="flex gap-4 mt-2">
-            <a href="#" className="hover:text-blue-400 transition-colors">
+            <a href="#" className="hover:text-blue-400 transition-colors cursor-not-allowed">
               <FaFacebookF />
             </a>
-            <a href="#" className="hover:text-blue-400 transition-colors">
+            <a href="#" className="hover:text-blue-400 transition-colors cursor-not-allowed">
               <FaTwitter />
             </a>
-            <a href="#" className="hover:text-blue-400 transition-colors">
+            <a href="#" className="hover:text-blue-400 transition-colors cursor-not-allowed">
               <FaLinkedinIn />
             </a>
-            <a href="#" className="hover:text-blue-400 transition-colors">
+            <a href="#" className="hover:text-blue-400 transition-colors cursor-not-allowed">
               <FaInstagram />
             </a>
           </div>

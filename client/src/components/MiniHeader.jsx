@@ -8,8 +8,17 @@ import toast, { Toaster } from "react-hot-toast";
 import Modal from "./Modal";
 import Input from "./Input";
 import { UserContext } from "../context/UserContext";
+import { RiMenu4Fill } from "react-icons/ri";
 
-const MiniHeader = ({ selected, setSelected, getDocuments, getDocs, setGetDocs }) => {
+const MiniHeader = ({
+  selected,
+  setSelected,
+  getDocuments,
+  getDocs,
+  setGetDocs,
+  isSidebarOpen,
+  setIsSidebarOpen,
+}) => {
   const navigate = useNavigate();
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -27,11 +36,13 @@ const MiniHeader = ({ selected, setSelected, getDocuments, getDocs, setGetDocs }
         )
       );
 
-      setGetDocs((prevDocs) => prevDocs.filter((doc) => !selected.includes(doc._id)));  
+      setGetDocs((prevDocs) =>
+        prevDocs.filter((doc) => !selected.includes(doc._id))
+      );
 
       setTimeout(() => {
-          getDocuments();
-        }, 1000);
+        getDocuments();
+      }, 1000);
       toast.success(`${selected.length} document(s) deleted ✅`);
       setSelected([]);
     } catch (error) {
@@ -119,14 +130,22 @@ const MiniHeader = ({ selected, setSelected, getDocuments, getDocs, setGetDocs }
   };
 
   return (
-    <div className="flex justify-between items-center px-3 md:px-10 py-2 border-b-1 border-gray-300">
-      <p
-        className="flex justify-between items-center gap-1 md:gap-2 text-gray-600 cursor-pointer hover:text-gray-700"
-        onClick={() => navigate("/")}
-      >
-        <IoMdHome className="text-lg" />
-        <span className="text-sm">Home</span>
-      </p>
+    <div className="flex justify-between items-center px-3 md:px-5 py-2 border-b-1 border-gray-300">
+      <div className={`flex items-center gap-2 ${isSidebarOpen? "ps-5": "ps-0"}`}>
+        {isSidebarOpen ? null : (
+          <RiMenu4Fill
+            className="text-gray-600 text-xl cursor-pointer"
+            onClick={() => setIsSidebarOpen(true)}
+          />
+        )}
+        <p
+          className="flex justify-between items-center gap-1 md:gap-2 text-gray-600 cursor-pointer hover:text-gray-700"
+          onClick={() => navigate("/")}
+        >
+          <IoMdHome className="text-lg" />
+          <span className="text-sm">Home</span>
+        </p>
+      </div>
       <div className="flex gap-1 md:gap-2 items-center">
         <IoMdRefreshCircle
           className="font-bold text-2xl md:mr-1 text-gray-700 cursor-pointer"

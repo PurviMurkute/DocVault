@@ -7,6 +7,7 @@ import { UserContext } from "../context/UserContext";
 import { useNavigate } from "react-router";
 import DocCard from "../components/DocCard";
 import MiniHeader from "../components/MiniHeader";
+import Sidebar from "../components/Sidebar";
 
 const Dashboard = () => {
   const [documents, setDocuments] = useState({
@@ -20,6 +21,7 @@ const Dashboard = () => {
   const [getDocs, setGetDocs] = useState([]);
   const [selected, setSelected] = useState([]);
   const [selectAll, setSelectAll] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   const toggleSelected = (id) => {
     setSelected((prev) =>
@@ -36,6 +38,21 @@ const Dashboard = () => {
   const { user, setUser } = useContext(UserContext);
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 768) {
+        setIsSidebarOpen(false);
+      } else {
+        setIsSidebarOpen(true);
+      }
+    };
+
+    handleResize();
+    window.addEventListener("resize", handleResize);
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const fetchAuth = async () => {
     try {
@@ -134,102 +151,112 @@ const Dashboard = () => {
   };
 
   return (
-    <div>
-      <Header onUploadOnclick={() => uploadRef.current?.click()} />
-      <hr className="mt-15 text-blue-50" />
-      <MiniHeader
-        selected={selected}
-        setSelected={setSelected}
-        getDocuments={getDocuments}
-        getDocs={getDocs}
-        setGetDocs={setGetDocs}
-      />
-      <div>
-        <IKContext
-          publicKey={import.meta.env.VITE_IMAGEKIT_PUBLIC_KEY}
-          urlEndpoint={import.meta.env.VITE_IMAGEKIT_URL_ENDPOINT}
-          authenticator={fetchAuth}
-        >
-          <IKUpload
-            ref={uploadRef}
-            id="custom-upload"
-            fileName="my-upload.pdf"
-            accept="*/*"
-            className="hidden"
-            onClick={() => {
-              toast.loading("Please, Select File", { id: "upload-toast" });
-            }}
-            onSelect={()=>{
-              toast.loading(`Uploading...`, { id: "upload-toast" });
-            }}
-            onError={(err) =>
-              toast.error("Upload failed ❌", err, { id: "upload-toast" })
-            }
-            onSuccess={(res) => {
-              const docData = {
-                url: res.url,
-                name: res.name,
-                fileid: res.fileId,
-                type: res.fileType,
-                size: res.size,
-              };
-              setDocuments(docData);
-              uploadDoc(docData);
-              console.log(res);
-
-              setTimeout(() => {
-                toast.success("Upload successful ✅", { id: "upload-toast" });
-              }, 1000);
-            }}
-          />
-        </IKContext>
+    <div className="flex">
+      <div className={`${isSidebarOpen ? "w-1/6" : "w-0"}`}>
+        <Sidebar
+          isSidebarOpen={isSidebarOpen}
+          setIsSidebarOpen={setIsSidebarOpen}
+          onUploadOnclick={() => uploadRef.current?.click()}
+        />
       </div>
-      <div>
-        <div className="font-bold text-gray-600 px-2 md:px-22 pt-4 flex justify-between items-center">
-          <p>Documents</p>
-          <div
-            className="flex items-center gap-2 cursor-pointer"
-            onClick={() => {
-              toggleSelectAll(), handleSelectAll();
-            }}
+      <div className="w-full">
+        <hr className=" text-blue-50" />
+        <MiniHeader
+          selected={selected}
+          setSelected={setSelected}
+          getDocuments={getDocuments}
+          getDocs={getDocs}
+          setGetDocs={setGetDocs}
+          isSidebarOpen={isSidebarOpen}
+          setIsSidebarOpen={setIsSidebarOpen}
+        />
+        <div>
+          <IKContext
+            publicKey={import.meta.env.VITE_IMAGEKIT_PUBLIC_KEY}
+            urlEndpoint={import.meta.env.VITE_IMAGEKIT_URL_ENDPOINT}
+            authenticator={fetchAuth}
           >
-            <p
-              className={`${
-                selectAll
-                  ? "bg-blue-600 border-none"
-                  : "bg-white border-1 border-gray-500"
-              } p-[6px]`}
-            ></p>
-            <p className="text-sm">Select All</p>
-          </div>
-        </div>
-        {getDocs.length === 0 ? (
-          <div className="flex flex-col justify-center items-center mt-20">
-            <img src="/empty.png" alt="emptybox" className="w-[250px]" />
-            <p className="font-medium font-sans text-center px-5">
-              Your vault is empty - upload a document to get started.
-            </p>
-          </div>
-        ) : (
-          <div className="flex flex-col items-center gap-5 px-2 md:px-20 py-4">
-            {getDocs.map((doc) => {
-              const { _id, url, name, uploadedAt } = doc;
+            <IKUpload
+              ref={uploadRef}
+              id="custom-upload"
+              fileName="my-upload.pdf"
+              accept="*/*"
+              className="hidden"
+              onClick={() => {
+                toast.loading("Please, Select File", { id: "upload-toast" });
+              }}
+              onSelect={() => {
+                toast.loading(`Uploading...`, { id: "upload-toast" });
+              }}
+              onError={(err) =>
+                toast.error("Upload failed ❌", err, { id: "upload-toast" })
+              }
+              onSuccess={(res) => {
+                const docData = {
+                  url: res.url,
+                  name: res.name,
+                  fileid: res.fileId,
+                  type: res.fileType,
+                  size: res.size,
+                };
+                setDocuments(docData);
+                uploadDoc(docData);
+                console.log(res);
 
-              return (
-                <DocCard
-                  key={_id}
-                  selected={selected.includes(_id)}
-                  setSelected={() => toggleSelected(_id)}
-                  url={url}
-                  name={name}
-                  uploadedAt={uploadedAt}
-                />
-              );
-            })}
+                setTimeout(() => {
+                  toast.success("Upload successful ✅", { id: "upload-toast" });
+                }, 1000);
+              }}
+            />
+          </IKContext>
+        </div>
+        <div>
+          <div className="font-bold text-gray-600 px-2 md:px-22 pt-4 flex justify-between items-center">
+            <p>Documents</p>
+            <div
+              className="flex items-center gap-2 cursor-pointer"
+              onClick={() => {
+                toggleSelectAll(), handleSelectAll();
+              }}
+            >
+              <p
+                className={`${
+                  selectAll
+                    ? "bg-blue-600 border-none"
+                    : "bg-white border-1 border-gray-500"
+                } p-[6px]`}
+              ></p>
+              <p className="text-sm">Select All</p>
+            </div>
           </div>
-        )}
+          {getDocs.length === 0 ? (
+            <div className="flex flex-col justify-center items-center mt-20">
+              <img src="/empty.png" alt="emptybox" className="w-[250px]" />
+              <p className="font-medium font-sans text-center px-5">
+                Your vault is empty - upload a document to get started.
+              </p>
+            </div>
+          ) : (
+            <div className="flex flex-col items-center gap-5 px-2 md:px-20 py-4">
+              {getDocs.map((doc) => {
+                const { _id, url, name, uploadedAt } = doc;
+
+                return (
+                  <DocCard
+                    key={_id}
+                    selected={selected.includes(_id)}
+                    setSelected={() => toggleSelected(_id)}
+                    url={url}
+                    name={name}
+                    uploadedAt={uploadedAt}
+                  />
+                );
+              })}
+            </div>
+          )}
+        </div>
+        <Toaster />
       </div>
-      <Toaster />
     </div>
   );
 };
