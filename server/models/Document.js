@@ -24,6 +24,8 @@ const documentSchema = new Schema({
         type: Date,
         default: Date.now()
     }
+}, {
+    timestamps: true
 })
 
 const Document = model("Document", documentSchema);

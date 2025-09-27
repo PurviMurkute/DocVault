@@ -1,5 +1,8 @@
 import Document from "../models/Document.js";
 import { imagekit } from '../config/imagekit.js';
+import { createCache, flushCache, getCache } from "../utils/cache.js";
+
+const getUserDocCacheKey = (userId) => `Documents:${userId}`;
 
 const postDocuments = async (req, res) => {
   const { url, name, fileid, type, size, uploadedAt } = req.body;
@@ -15,6 +18,9 @@ const postDocuments = async (req, res) => {
       userId,
       uploadedAt,
     });
+
+    await flushCache(getUserDocCacheKey(userId));
+    console.log(`cache flush ${userId}`);
 
     return res.status(201).json({
       success: true,
@@ -35,7 +41,18 @@ const getDocumentsbyUser = async (req, res) => {
   const userId = req?.user?._id;
 
   try {
-    const documents = await Document.find({ userId });
+    let documents = [];
+
+    const documentsFromRedis = await getCache(getUserDocCacheKey(userId));
+    if(documentsFromRedis){
+      documents = documentsFromRedis
+    } else{
+      documents = await Document.find({ userId }).sort({
+        createdAt: -1,
+      });
+      await createCache(getUserDocCacheKey(userId), documents);
+      console.log(`cache create ${userId}`);
+    }
 
     if (documents.length === 0) {
       return res.status(404).json({
@@ -62,6 +79,7 @@ const getDocumentsbyUser = async (req, res) => {
 const editDocuments = async (req, res) => {
   const { docId } = req.params;
   const { name } = req.body;
+  const userId = req.user._id;
 
   if (!name) {
     return res.status(400).json({
@@ -77,6 +95,10 @@ const editDocuments = async (req, res) => {
       { name },
       { new: true }
     );
+
+    await flushCache(getUserDocCacheKey(userId));
+    console.log(`cache flush ${userId}`);
+    
 
     return res.status(200).json({
       success: true,
@@ -94,6 +116,7 @@ const editDocuments = async (req, res) => {
 
 const deleteDocuments = async (req, res) => {
   const { docId } = req.params;
+  const userId = req.user._id;
 
   try {
     const doc = await Document.findById(docId);
@@ -107,6 +130,10 @@ const deleteDocuments = async (req, res) => {
     await imagekit.deleteFile(doc.fileid);
 
     const document = await Document.findByIdAndDelete(docId);
+
+    await flushCache(getUserDocCacheKey(userId));
+    console.log(`cache flush ${userId}`);
+    
 
     return res.status(200).json({
       success: true,
