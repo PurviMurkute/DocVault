@@ -167,7 +167,9 @@ const toggleImp = async (req, res) => {
     return res.status(200).json({
       success: true,
       data: document,
-      message: `Marked as ${document.isImportant ? "important" : "unimportant"}`,
+      message: `Marked as ${
+        document.isImportant ? "important" : "unimportant"
+      }`,
     });
   } catch (error) {
     return res.status(400).json({
@@ -178,4 +180,40 @@ const toggleImp = async (req, res) => {
   }
 };
 
-export { postDocuments, getDocumentsbyUser, editDocuments, deleteDocuments, toggleImp };
+const searchDoc = async (req, res) => {
+  const { query } = req.query;
+
+  try {
+    const searchedDocs = await Document.find({
+      name: { $regex: query, $options: "i" },
+    });
+
+    if (searchedDocs.length === 0) {
+      return res.status(404).json({
+        success: false,
+        data: null,
+        message: "No documents found for your search",
+      });
+    }
+    return res.status(200).json({
+      success: false,
+      data: searchedDocs,
+      message: "documents fetched successfully",
+    });
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      data: null,
+      message: error?.message,
+    });
+  }
+};
+
+export {
+  postDocuments,
+  getDocumentsbyUser,
+  editDocuments,
+  deleteDocuments,
+  toggleImp,
+  searchDoc
+};
