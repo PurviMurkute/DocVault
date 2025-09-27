@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { IoMdHome } from "react-icons/io";
 import Button from "./Button";
 import { IoMdRefreshCircle } from "react-icons/io";
@@ -20,6 +20,8 @@ const MiniHeader = ({
   setIsSidebarOpen,
   selectAll,
   setSelectAll,
+  searchText, 
+  setSearchText
 }) => {
   const navigate = useNavigate();
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -200,10 +202,13 @@ const MiniHeader = ({
         </div>
       </div>
       <div className="flex justify-between items-center gap-5 px-2 md:px-5 border-b-1 border-gray-300">
-        <div
-          className={`${isSidebarOpen ? "ps-5" : "ps-0"} w-[70%]`}
-        >
-          <Input type={"text"} placeholder={`🔎 Search your docs here...`} />
+        <div className={`${isSidebarOpen ? "ps-5" : "ps-0"} w-[70%]`}>
+          <Input
+            type={"text"}
+            placeholder={`🔎 Search your docs here...`}
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
+          />
         </div>
         <div
           className="flex items-center gap-2 cursor-pointer"

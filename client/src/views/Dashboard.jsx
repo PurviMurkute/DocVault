@@ -18,6 +18,7 @@ const Dashboard = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [fileName, setFileName] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [searchText, setSearchText] = useState("");
 
   const toggleSelected = (id) => {
     setSelected((prev) =>
@@ -112,8 +113,9 @@ const Dashboard = () => {
       );
 
       if (response.data.success) {
-        setGetDocs(response.data.data);
+        setGetDocs(response.data.data || []);
       } else {
+        setGetDocs([]);
         toast.error(error?.response?.data?.message || error?.message);
       }
     } catch (error) {
@@ -133,9 +135,46 @@ const Dashboard = () => {
     }
   };
 
+  const searchDocs = async () => {
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_SERVER_URL}/docs/search?query=${searchText}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("JWT")}`,
+          },
+        }
+      );
+
+      console.log(response.data);
+
+      if (response.data.success) {
+        setGetDocs(response.data.data);
+      } else {
+        toast.error(response.data.message);
+      }
+    } catch (error) {
+      if (error?.response?.data?.message == "Invalid or expired token") {
+        localStorage.removeItem("JWT");
+        localStorage.removeItem("user");
+        setUser(null);
+        toast.error("JWT expired, please signin again");
+        setTimeout(() => {
+          navigate("/login");
+        }, 2000);
+        return;
+      }
+      toast.error(error?.response?.data?.message || error?.message);
+    }
+  };
+
   useEffect(() => {
-    getDocuments();
-  }, []);
+    if (searchText) {
+      searchDocs();
+    } else {
+      getDocuments();
+    }
+  }, [searchText]);
 
   const onUploadOnclick = () => {
     uploadRef.current?.click();
@@ -164,8 +203,10 @@ const Dashboard = () => {
           setGetDocs={setGetDocs}
           isSidebarOpen={isSidebarOpen}
           setIsSidebarOpen={setIsSidebarOpen}
-          selectAll={selectAll} 
+          selectAll={selectAll}
           setSelectAll={setSelectAll}
+          searchText={searchText}
+          setSearchText={setSearchText}
         />
         <div>
           <IKContext
@@ -219,19 +260,25 @@ const Dashboard = () => {
           </IKContext>
         </div>
         <div>
-          <p className="text-gray-600 font-bold ps-3 md:ps-13 mt-5">Documents</p>
+          <p className="text-gray-600 font-bold ps-3 md:ps-13 mt-5">
+            Documents
+          </p>
           {loading ? (
             <Loader loadingText={"loading your documents"} />
-          ) : getDocs.length === 0 ? (
+          ) : (!getDocs || getDocs.length === 0) && !searchText ? (
             <div className="flex flex-col justify-center items-center mt-20">
               <img src="/empty.png" alt="emptybox" className="w-[250px]" />
               <p className="font-medium font-sans text-center px-5">
                 Your vault is empty - upload a document to get started.
               </p>
             </div>
+          ) : searchText && (!getDocs || getDocs.length === 0) ? (
+            <div className="text-center py-30 text-gray-500 px-6">
+              Opps.. No documents found for your search <span className="font-bold">{searchText}</span>
+            </div>
           ) : (
             <div className="flex flex-col items-center gap-5 px-2 md:px-13 py-4">
-              {getDocs.map((doc) => {
+              {getDocs?.map((doc) => {
                 const { _id, url, name, uploadedAt, isImportant } = doc;
 
                 const ext = name.split(".").pop();

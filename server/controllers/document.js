@@ -182,28 +182,30 @@ const toggleImp = async (req, res) => {
 
 const searchDoc = async (req, res) => {
   const { query } = req.query;
+  const userId = req.user._id;
 
   try {
     const searchedDocs = await Document.find({
+      userId: userId,
       name: { $regex: query, $options: "i" },
     });
 
     if (searchedDocs.length === 0) {
-      return res.status(404).json({
-        success: false,
+      return res.status(200).json({
+        success: true,
         data: null,
-        message: "No documents found for your search",
+        message: "No documents found matching your search."
       });
     }
+
     return res.status(200).json({
-      success: false,
+      success: true,
       data: searchedDocs,
-      message: "documents fetched successfully",
+      message: "Documents fetched successfully"
     });
   } catch (error) {
-    return res.status(400).json({
+    return res.status(500).json({
       success: false,
-      data: null,
       message: error?.message,
     });
   }
@@ -215,5 +217,5 @@ export {
   editDocuments,
   deleteDocuments,
   toggleImp,
-  searchDoc
+  searchDoc,
 };
