@@ -17,7 +17,7 @@ const MiniHeader = ({
   getDocs,
   setGetDocs,
   isSidebarOpen,
-  setIsSidebarOpen,
+  setIsSidebarOpen
 }) => {
   const navigate = useNavigate();
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -101,6 +101,7 @@ const MiniHeader = ({
         setTimeout(() => {
           getDocuments();
         }, 1000);
+        setSelected([]);
       } else {
         toast.error(response.data.message);
       }
@@ -181,11 +182,13 @@ const MiniHeader = ({
         </div>
       </div>
       <div className="flex justify-between items-center px-1 md:px-5 border-b-1 border-gray-300">
-        <div className={`${isSidebarOpen ? "ps-5" : "ps-0"} w-[75%] md:w-[70%]`}>
+        <div
+          className={`${isSidebarOpen ? "ps-5" : "ps-0"} w-[75%] md:w-[70%]`}
+        >
           <Input type={"text"} placeholder={`🔎 Search your docs here...`} />
         </div>
         <Button
-          btnText={`${window.innerWidth >= 768 ? "Move to Importants": "" }`}
+          btnText={`${window.innerWidth >= 768 ? "Move to Importants" : ""}`}
           btnSize={"roundfull"}
           variant={"outline"}
           icon={"star"}
