@@ -17,7 +17,9 @@ const MiniHeader = ({
   getDocs,
   setGetDocs,
   isSidebarOpen,
-  setIsSidebarOpen
+  setIsSidebarOpen,
+  selectAll,
+  setSelectAll,
 }) => {
   const navigate = useNavigate();
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -31,7 +33,9 @@ const MiniHeader = ({
       await Promise.all(
         selected.map((id) =>
           axios.delete(`${import.meta.env.VITE_SERVER_URL}/docs/${id}`, {
-            headers: { Authorization: `Bearer ${localStorage.getItem("JWT")}` },
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("JWT")}`,
+            },
           })
         )
       );
@@ -130,6 +134,20 @@ const MiniHeader = ({
     setIsEditModalOpen(false);
   };
 
+  const toggleSelectAll = () => {
+    setSelectAll(!selectAll);
+  };
+
+  const handleSelectAll = () => {
+    if (selected.length === getDocs.length) {
+      setSelected([]);
+      setSelectAll(false);
+    } else {
+      setSelected(getDocs.map((doc) => doc._id));
+      setSelectAll(true);
+    }
+  };
+
   return (
     <div className="flex flex-col">
       <div className="flex justify-between items-center px-2 md:px-5 py-2 border-b-1 border-gray-300">
@@ -181,20 +199,27 @@ const MiniHeader = ({
           />
         </div>
       </div>
-      <div className="flex justify-between items-center px-1 md:px-5 border-b-1 border-gray-300">
+      <div className="flex justify-between items-center gap-5 px-2 md:px-5 border-b-1 border-gray-300">
         <div
-          className={`${isSidebarOpen ? "ps-5" : "ps-0"} w-[75%] md:w-[70%]`}
+          className={`${isSidebarOpen ? "ps-5" : "ps-0"} w-[70%]`}
         >
           <Input type={"text"} placeholder={`🔎 Search your docs here...`} />
         </div>
-        <Button
-          btnText={`${window.innerWidth >= 768 ? "Move to Importants" : ""}`}
-          btnSize={"roundfull"}
-          variant={"outline"}
-          icon={"star"}
-          iconPosition={"left"}
-          className={"cursor-pointer md:py-1 text-gray-500"}
-        />
+        <div
+          className="flex items-center gap-2 cursor-pointer"
+          onClick={() => {
+            toggleSelectAll(), handleSelectAll();
+          }}
+        >
+          <p
+            className={`${
+              selectAll
+                ? "bg-blue-600 border-none"
+                : "bg-white border-1 border-gray-500"
+            } p-[6px]`}
+          ></p>
+          <p className="text-sm">Select All</p>
+        </div>
       </div>
       <Modal
         isOpen={isDeleteModalOpen}

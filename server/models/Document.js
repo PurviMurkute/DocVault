@@ -20,6 +20,10 @@ const documentSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: "User"
     },
+    isImportant: {
+        type: Boolean,
+        default: false
+    },
     uploadedAt: {
         type: Date,
         default: Date.now()

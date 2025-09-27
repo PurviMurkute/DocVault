@@ -3,10 +3,11 @@ import { IKContext, IKUpload } from "imagekitio-react";
 import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
 import { UserContext } from "../context/UserContext";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import DocCard from "../components/DocCard";
 import MiniHeader from "../components/MiniHeader";
 import Sidebar from "../components/Sidebar";
+import Loader from "../components/Loader";
 
 const Dashboard = () => {
   const [documents, setDocuments] = useState([]);
@@ -16,16 +17,12 @@ const Dashboard = () => {
   const [selectAll, setSelectAll] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [fileName, setFileName] = useState(null);
-  const [selectedMenu, setSelectedMenu] = useState("All Docs");
+  const [loading, setLoading] = useState(false);
 
   const toggleSelected = (id) => {
     setSelected((prev) =>
       prev.includes(id) ? prev.filter((docId) => docId !== id) : [...prev, id]
     );
-  };
-
-  const toggleSelectAll = () => {
-    setSelectAll(!selectAll);
   };
 
   const uploadRef = useRef();
@@ -48,6 +45,8 @@ const Dashboard = () => {
 
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+
+  const location = useLocation();
 
   const fetchAuth = async () => {
     try {
@@ -102,6 +101,7 @@ const Dashboard = () => {
 
   const getDocuments = async () => {
     try {
+      setLoading(true);
       const response = await axios.get(
         `${import.meta.env.VITE_SERVER_URL}/docs`,
         {
@@ -128,6 +128,8 @@ const Dashboard = () => {
         return;
       }
       toast.error(error?.response?.data?.message || error?.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -135,13 +137,10 @@ const Dashboard = () => {
     getDocuments();
   }, []);
 
-  const handleSelectAll = () => {
-    if (selected.length === getDocs.length) {
-      setSelected([]);
-      setSelectAll(false);
-    } else {
-      setSelected(getDocs.map((doc) => doc._id));
-      setSelectAll(true);
+  const onUploadOnclick = () => {
+    uploadRef.current?.click();
+    if (window.innerWidth < 1200) {
+      setIsSidebarOpen(false);
     }
   };
 
@@ -152,9 +151,7 @@ const Dashboard = () => {
           getDocs={getDocs}
           isSidebarOpen={isSidebarOpen}
           setIsSidebarOpen={setIsSidebarOpen}
-          onUploadOnclick={() => uploadRef.current?.click()}
-          selectedMenu={selectedMenu}
-          setSelectedMenu={setSelectedMenu}
+          onUploadOnclick={onUploadOnclick}
         />
       </div>
       <div className="w-full">
@@ -167,6 +164,8 @@ const Dashboard = () => {
           setGetDocs={setGetDocs}
           isSidebarOpen={isSidebarOpen}
           setIsSidebarOpen={setIsSidebarOpen}
+          selectAll={selectAll} 
+          setSelectAll={setSelectAll}
         />
         <div>
           <IKContext
@@ -207,7 +206,7 @@ const Dashboard = () => {
                   size: res.size,
                 };
 
-                setGetDocs((prev) => [...prev, docData]); // ✅ store multiple docs
+                setGetDocs((prev) => [...prev, docData]);
                 uploadDoc(docData);
 
                 setTimeout(() => {
@@ -220,25 +219,10 @@ const Dashboard = () => {
           </IKContext>
         </div>
         <div>
-          <div className="font-bold text-gray-600 px-2 md:px-15 pt-4 flex justify-between items-center">
-            <p>Documents</p>
-            <div
-              className="flex items-center gap-2 cursor-pointer"
-              onClick={() => {
-                toggleSelectAll(), handleSelectAll();
-              }}
-            >
-              <p
-                className={`${
-                  selectAll
-                    ? "bg-blue-600 border-none"
-                    : "bg-white border-1 border-gray-500"
-                } p-[6px]`}
-              ></p>
-              <p className="text-sm">Select All</p>
-            </div>
-          </div>
-          {getDocs.length === 0 ? (
+          <p className="text-gray-600 font-bold ps-3 md:ps-13 mt-5">Documents</p>
+          {loading ? (
+            <Loader loadingText={"loading your documents"} />
+          ) : getDocs.length === 0 ? (
             <div className="flex flex-col justify-center items-center mt-20">
               <img src="/empty.png" alt="emptybox" className="w-[250px]" />
               <p className="font-medium font-sans text-center px-5">
@@ -248,22 +232,25 @@ const Dashboard = () => {
           ) : (
             <div className="flex flex-col items-center gap-5 px-2 md:px-13 py-4">
               {getDocs.map((doc) => {
-                const { _id, url, name, uploadedAt } = doc;
+                const { _id, url, name, uploadedAt, isImportant } = doc;
 
                 const ext = name.split(".").pop();
 
                 return (
                   <>
-                    {selectedMenu === "All Docs" ? (
+                    {location.pathname === "/dashboard" ? (
                       <DocCard
                         key={_id}
+                        _id={_id}
                         selected={selected.includes(_id)}
                         setSelected={() => toggleSelected(_id)}
                         url={url}
                         name={name}
                         uploadedAt={uploadedAt}
+                        isImportant={isImportant}
+                        getDocuments={getDocuments}
                       />
-                    ) : selectedMenu === "Images" &&
+                    ) : location.pathname === "/dashboard/images" &&
                       (ext === "png" ||
                         ext === "jpg" ||
                         ext === "jpeg" ||
@@ -275,15 +262,34 @@ const Dashboard = () => {
                         url={url}
                         name={name}
                         uploadedAt={uploadedAt}
+                        isImportant={isImportant}
+                        getDocuments={getDocuments}
                       />
-                    ) : selectedMenu === "PDF's" && ext === "pdf" ? (
+                    ) : location.pathname === "/dashboard/pdf's" &&
+                      ext === "pdf" ? (
                       <DocCard
                         key={_id}
+                        _id={_id}
                         selected={selected.includes(_id)}
                         setSelected={() => toggleSelected(_id)}
                         url={url}
                         name={name}
                         uploadedAt={uploadedAt}
+                        isImportant={isImportant}
+                        getDocuments={getDocuments}
+                      />
+                    ) : location.pathname === "/dashboard/imp's" &&
+                      isImportant ? (
+                      <DocCard
+                        key={_id}
+                        _id={_id}
+                        selected={selected.includes(_id)}
+                        setSelected={() => toggleSelected(_id)}
+                        url={url}
+                        name={name}
+                        uploadedAt={uploadedAt}
+                        isImportant={isImportant}
+                        getDocuments={getDocuments}
                       />
                     ) : null}
                   </>

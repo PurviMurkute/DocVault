@@ -1,5 +1,5 @@
 import Document from "../models/Document.js";
-import { imagekit } from '../config/imagekit.js';
+import { imagekit } from "../config/imagekit.js";
 import { createCache, flushCache, getCache } from "../utils/cache.js";
 
 const getUserDocCacheKey = (userId) => `Documents:${userId}`;
@@ -13,7 +13,7 @@ const postDocuments = async (req, res) => {
       url,
       name,
       fileid,
-      type: name.split('.').pop(),
+      type: name.split(".").pop(),
       size,
       userId,
       uploadedAt,
@@ -37,16 +37,15 @@ const postDocuments = async (req, res) => {
 };
 
 const getDocumentsbyUser = async (req, res) => {
-
   const userId = req?.user?._id;
 
   try {
     let documents = [];
 
     const documentsFromRedis = await getCache(getUserDocCacheKey(userId));
-    if(documentsFromRedis){
-      documents = documentsFromRedis
-    } else{
+    if (documentsFromRedis) {
+      documents = documentsFromRedis;
+    } else {
       documents = await Document.find({ userId }).sort({
         createdAt: -1,
       });
@@ -98,7 +97,6 @@ const editDocuments = async (req, res) => {
 
     await flushCache(getUserDocCacheKey(userId));
     console.log(`cache flush ${userId}`);
-    
 
     return res.status(200).json({
       success: true,
@@ -133,13 +131,12 @@ const deleteDocuments = async (req, res) => {
 
     await flushCache(getUserDocCacheKey(userId));
     console.log(`cache flush ${userId}`);
-    
 
     return res.status(200).json({
       success: true,
       data: document,
-      message: "File deleted successfully"
-    })
+      message: "File deleted successfully",
+    });
   } catch (error) {
     return res.status(400).json({
       success: false,
@@ -147,6 +144,38 @@ const deleteDocuments = async (req, res) => {
       message: error?.message,
     });
   }
-}
+};
 
-export { postDocuments, getDocumentsbyUser, editDocuments, deleteDocuments };
+const toggleImp = async (req, res) => {
+  const { docId } = req.params;
+  const userId = req.user._id;
+
+  try {
+    const document = await Document.findById(docId);
+    if (!document) {
+      return res.status(404).json({
+        success: false,
+        data: null,
+        message: "Document not found",
+      });
+    }
+
+    document.isImportant = !document.isImportant;
+    await document.save();
+    await flushCache(getUserDocCacheKey(userId));
+
+    return res.status(200).json({
+      success: true,
+      data: document,
+      message: `Marked as ${document.isImportant ? "important" : "unimportant"}`,
+    });
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      data: null,
+      message: error?.message,
+    });
+  }
+};
+
+export { postDocuments, getDocumentsbyUser, editDocuments, deleteDocuments, toggleImp };

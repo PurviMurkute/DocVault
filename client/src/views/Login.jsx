@@ -92,6 +92,7 @@ const Login = () => {
             onclick={() => {
               window.open(`${import.meta.env.VITE_SERVER_URL}/google`, "_self");
             }}
+            className={"cursor-pointer"}
           />
           <div className="flex items-center w-[90%] mx-auto my-2">
             <div className="h-[0.5px] flex-1 bg-gray-500" />

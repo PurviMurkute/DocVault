@@ -14,6 +14,10 @@ const App = () => {
       <Route path='/login' element={<Login />}></Route>
       <Route path='/dashboard' element={<Dashboard />}></Route>
       <Route path='/google-success' element={<GoogleLogin />}></Route>
+      <Route path='dashboard/images' element={<Dashboard />}></Route>
+      <Route path="dashboard/pdf's" element={<Dashboard />}></Route>
+      <Route path='dashboard/trash' element={<Dashboard />}></Route>
+      <Route path="dashboard/imp's" element={<Dashboard />}></Route>
     </Routes>
   )
 }

@@ -1,5 +1,5 @@
 import logo from "../assets/pages.png";
-import { Link } from "react-router";
+import { Link, useLocation, useNavigate } from "react-router";
 import { IoMdCloseCircle } from "react-icons/io";
 import Button from "./Button";
 import { useContext } from "react";
@@ -13,20 +13,38 @@ const Sidebar = ({
   isSidebarOpen,
   setIsSidebarOpen,
   onUploadOnclick,
-  selectedMenu,
-  setSelectedMenu,
 }) => {
   const { handleLogOut } = useContext(UserContext);
 
+  const navigate = useNavigate();
+  const location = useLocation();
+
   const menuItems = [
-    { icon: <IoDocumentsSharp className="text-gray-300" />, label: "All Docs" },
-    { icon: <IoMdImages className="text-blue-400" />, label: "Images" },
-    { icon: <MdPictureAsPdf className="text-red-300" />, label: "PDF's" },
+    {
+      icon: <IoDocumentsSharp className="text-gray-300" />,
+      label: "All Docs",
+      pathname: "/dashboard"
+    },
+    {
+      icon: <IoMdImages className="text-blue-400" />,
+      label: "Images",
+      pathname: "/dashboard/images"
+    },
+    {
+      icon: <MdPictureAsPdf className="text-red-300" />,
+      label: "PDF's",
+      pathname: "/dashboard/pdf's"
+    },
     {
       icon: <IoTrashSharp className="text-red-400" />,
       label: "Recently Deleted",
+      pathname: "/dashboard/trash"
     },
-    { icon: <AiFillStar className="text-yellow-600" />, label: "Important's" },
+    {
+      icon: <AiFillStar className="text-yellow-600" />,
+      label: "Important's",
+      pathname: "/dashboard/imp's"
+    },
   ];
 
   return (
@@ -64,11 +82,13 @@ const Sidebar = ({
                 <p
                   key={i}
                   className={`${
-                    selectedMenu === item.label
+                    location.pathname === item.pathname
                       ? "bg-gray-600"
                       : "text-gray-200"
                   } flex items-center gap-2 font-medium py-1 hover:bg-gray-600 rounded-lg cursor-pointer px-2 transition`}
-                  onClick={() => setSelectedMenu(item.label)}
+                  onClick={() => {
+                    navigate(item.pathname);
+                  }}
                 >
                   {item.icon}
                   <span>{item.label}</span>
