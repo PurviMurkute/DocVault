@@ -19,6 +19,7 @@ const Dashboard = () => {
   const [fileName, setFileName] = useState(null);
   const [loading, setLoading] = useState(false);
   const [searchText, setSearchText] = useState("");
+  const [tempDeleted, setTempDeleted] = useState([]);
 
   const toggleSelected = (id) => {
     setSelected((prev) =>
@@ -48,6 +49,12 @@ const Dashboard = () => {
   }, []);
 
   const location = useLocation();
+
+  const isDashboard = location.pathname === "/dashboard";
+  const isImages = location.pathname === "/dashboard/images";
+  const isPdfs = location.pathname === "/dashboard/pdf's";
+  const isImp = location.pathname === "/dashboard/imp's";
+  const isTrash = location.pathname === "/dashboard/trash";
 
   const fetchAuth = async () => {
     try {
@@ -135,6 +142,37 @@ const Dashboard = () => {
     }
   };
 
+  const getTempDeleted = async () => {
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_SERVER_URL}/docs/deleted`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("JWT")}`,
+          },
+        }
+      );
+
+      if (response.data.success) {
+        setTempDeleted(response.data.data);
+      } else {
+        toast.error(response.data.message);
+      }
+    } catch (error) {
+      if (error?.response?.data?.message == "Invalid or expired token") {
+        localStorage.removeItem("JWT");
+        localStorage.removeItem("user");
+        setUser(null);
+        toast.error("JWT expired, please signin again");
+        setTimeout(() => {
+          navigate("/login");
+        }, 2000);
+        return;
+      }
+      toast.error(error?.response?.data?.message || error?.message);
+    }
+  };
+
   const searchDocs = async () => {
     try {
       const response = await axios.get(
@@ -171,13 +209,21 @@ const Dashboard = () => {
   useEffect(() => {
     if (searchText) {
       searchDocs();
+    } else if (isTrash) {
+      getTempDeleted();
     } else {
       getDocuments();
     }
-  }, [searchText]);
+  }, [searchText, isTrash]);
 
   const onUploadOnclick = () => {
     uploadRef.current?.click();
+    if (window.innerWidth < 1200) {
+      setIsSidebarOpen(false);
+    }
+  };
+
+  const closeSideBar = () => {
     if (window.innerWidth < 1200) {
       setIsSidebarOpen(false);
     }
@@ -191,6 +237,7 @@ const Dashboard = () => {
           isSidebarOpen={isSidebarOpen}
           setIsSidebarOpen={setIsSidebarOpen}
           onUploadOnclick={onUploadOnclick}
+          closeSideBar={closeSideBar}
         />
       </div>
       <div className="w-full">
@@ -207,6 +254,8 @@ const Dashboard = () => {
           setSelectAll={setSelectAll}
           searchText={searchText}
           setSearchText={setSearchText}
+          isTrash={isTrash}
+          tempDeleted={tempDeleted}
         />
         <div>
           <IKContext
@@ -265,27 +314,37 @@ const Dashboard = () => {
           </p>
           {loading ? (
             <Loader loadingText={"loading your documents"} />
-          ) : (!getDocs || getDocs.length === 0) && !searchText ? (
+          ) : (!getDocs || getDocs.length === 0) && !searchText && !isTrash ? (
             <div className="flex flex-col justify-center items-center mt-20">
               <img src="/empty.png" alt="emptybox" className="w-[250px]" />
               <p className="font-medium font-sans text-center px-5">
                 Your vault is empty - upload a document to get started.
               </p>
             </div>
-          ) : searchText && (!getDocs || getDocs.length === 0) ? (
+          ) : (searchText && (!getDocs || getDocs.length === 0)) ||
+            (isTrash && (!tempDeleted || tempDeleted.length === 0)) ? (
             <div className="text-center py-30 text-gray-500 px-6">
-              Opps.. No documents found for your search <span className="font-bold">{searchText}</span>
+              Opps.. No documents found for your search{" "}
+              <span className="font-bold">{searchText}</span>
             </div>
           ) : (
             <div className="flex flex-col items-center gap-5 px-2 md:px-13 py-4">
-              {getDocs?.map((doc) => {
-                const { _id, url, name, uploadedAt, isImportant } = doc;
+              {(isTrash ? tempDeleted : getDocs)?.map((doc) => {
+                const {
+                  _id,
+                  url,
+                  name,
+                  uploadedAt,
+                  isImportant,
+                  isDeleted,
+                  deletedAt,
+                } = doc;
 
                 const ext = name.split(".").pop();
 
                 return (
                   <>
-                    {location.pathname === "/dashboard" ? (
+                    {isDashboard ? (
                       <DocCard
                         key={_id}
                         _id={_id}
@@ -297,7 +356,7 @@ const Dashboard = () => {
                         isImportant={isImportant}
                         getDocuments={getDocuments}
                       />
-                    ) : location.pathname === "/dashboard/images" &&
+                    ) : isImages &&
                       (ext === "png" ||
                         ext === "jpg" ||
                         ext === "jpeg" ||
@@ -312,8 +371,7 @@ const Dashboard = () => {
                         isImportant={isImportant}
                         getDocuments={getDocuments}
                       />
-                    ) : location.pathname === "/dashboard/pdf's" &&
-                      ext === "pdf" ? (
+                    ) : isPdfs && ext === "pdf" ? (
                       <DocCard
                         key={_id}
                         _id={_id}
@@ -325,8 +383,7 @@ const Dashboard = () => {
                         isImportant={isImportant}
                         getDocuments={getDocuments}
                       />
-                    ) : location.pathname === "/dashboard/imp's" &&
-                      isImportant ? (
+                    ) : isImp && isImportant ? (
                       <DocCard
                         key={_id}
                         _id={_id}
@@ -337,6 +394,19 @@ const Dashboard = () => {
                         uploadedAt={uploadedAt}
                         isImportant={isImportant}
                         getDocuments={getDocuments}
+                      />
+                    ) : isTrash ? (
+                      <DocCard
+                        key={_id}
+                        _id={_id}
+                        selected={selected.includes(_id)}
+                        setSelected={() => toggleSelected(_id)}
+                        url={url}
+                        name={name}
+                        uploadedAt={uploadedAt}
+                        getDocuments={getTempDeleted}
+                        isDeleted={isDeleted}
+                        deletedAt={deletedAt}
                       />
                     ) : null}
                   </>

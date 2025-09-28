@@ -13,6 +13,7 @@ const Sidebar = ({
   isSidebarOpen,
   setIsSidebarOpen,
   onUploadOnclick,
+  closeSideBar
 }) => {
   const { handleLogOut } = useContext(UserContext);
 
@@ -37,7 +38,7 @@ const Sidebar = ({
     },
     {
       icon: <IoTrashSharp className="text-red-400" />,
-      label: "Recently Deleted",
+      label: "Trash",
       pathname: "/dashboard/trash"
     },
     {
@@ -88,6 +89,7 @@ const Sidebar = ({
                   } flex items-center gap-2 font-medium py-1 hover:bg-gray-600 rounded-lg cursor-pointer px-2 transition`}
                   onClick={() => {
                     navigate(item.pathname);
+                    closeSideBar()
                   }}
                 >
                   {item.icon}

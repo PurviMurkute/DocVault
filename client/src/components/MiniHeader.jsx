@@ -20,8 +20,10 @@ const MiniHeader = ({
   setIsSidebarOpen,
   selectAll,
   setSelectAll,
-  searchText, 
-  setSearchText
+  searchText,
+  setSearchText,
+  isTrash,
+  tempDeleted,
 }) => {
   const navigate = useNavigate();
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -34,11 +36,15 @@ const MiniHeader = ({
     try {
       await Promise.all(
         selected.map((id) =>
-          axios.delete(`${import.meta.env.VITE_SERVER_URL}/docs/${id}`, {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("JWT")}`,
-            },
-          })
+          axios.patch(
+            `${import.meta.env.VITE_SERVER_URL}/docs/delete/${id}`,
+            {},
+            {
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem("JWT")}`,
+              },
+            }
+          )
         )
       );
 
@@ -141,11 +147,18 @@ const MiniHeader = ({
   };
 
   const handleSelectAll = () => {
-    if (selected.length === getDocs.length) {
+    if (
+      selected.length === getDocs.length ||
+      selected.length === tempDeleted.length
+    ) {
       setSelected([]);
       setSelectAll(false);
     } else {
-      setSelected(getDocs.map((doc) => doc._id));
+      {
+        isTrash
+          ? setSelected(tempDeleted.map((doc) => doc._id))
+          : setSelected(getDocs.map((doc) => doc._id));
+      }
       setSelectAll(true);
     }
   };
@@ -177,28 +190,55 @@ const MiniHeader = ({
             className="font-bold text-2xl md:mr-1 text-gray-700 cursor-pointer"
             onClick={() => window.location.reload()}
           />
-          <Button
-            btnText={"Delete"}
-            btnSize={"roundfull"}
-            variant={"outline"}
-            className={`w-[80px] ${
-              !selected || selected.length === 0
-                ? "cursor-not-allowed"
-                : "cursor-pointer border-red-700 text-red-600"
-            }`}
-            onclick={() => setIsDeleteModalOpen(true)}
-          />
-          <Button
-            btnText={"Edit"}
-            btnSize={"roundfull"}
-            variant={"outline"}
-            className={`w-[80px] ${
-              !selected || selected.length === 0 || selected.length > 1
-                ? "cursor-not-allowed"
-                : "cursor-pointer border-green-700 text-green-600"
-            }`}
-            onclick={openEditModal}
-          />
+          {isTrash ? (
+            <>
+              <Button
+                btnText={"Delete"}
+                btnSize={"roundfull"}
+                variant={"outline"}
+                className={`w-[80px] ${
+                  !selected || selected.length === 0
+                    ? "cursor-not-allowed"
+                    : "cursor-pointer border-red-700 text-red-600"
+                }`}
+              />
+              <Button
+                btnText={"Restore"}
+                btnSize={"roundfull"}
+                variant={"outline"}
+                className={`w-[80px] ${
+                  !selected || selected.length === 0
+                    ? "cursor-not-allowed"
+                    : "cursor-pointer border-green-700 text-green-600"
+                }`}
+              />
+            </>
+          ) : (
+            <>
+              <Button
+                btnText={"Delete"}
+                btnSize={"roundfull"}
+                variant={"outline"}
+                className={`w-[80px] ${
+                  !selected || selected.length === 0
+                    ? "cursor-not-allowed"
+                    : "cursor-pointer border-red-700 text-red-600"
+                }`}
+                onclick={() => setIsDeleteModalOpen(true)}
+              />
+              <Button
+                btnText={"Edit"}
+                btnSize={"roundfull"}
+                variant={"outline"}
+                className={`w-[80px] ${
+                  !selected || selected.length === 0 || selected.length > 1
+                    ? "cursor-not-allowed"
+                    : "cursor-pointer border-green-700 text-green-600"
+                }`}
+                onclick={openEditModal}
+              />
+            </>
+          )}
         </div>
       </div>
       <div className="flex justify-between items-center gap-5 px-2 md:px-5 border-b-1 border-gray-300">
