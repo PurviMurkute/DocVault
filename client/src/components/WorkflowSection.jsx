@@ -12,7 +12,7 @@ const WorkflowSection = ({
     <div
       className={`flex flex-col ${
         reverse ? "md:flex-row-reverse" : "md:flex-row"
-      } items-center justify-center gap-10 mt-10 py-10 md:py-20 
+      } items-center justify-center gap-10 mt-10 py-10 md:py-20
       bg-gradient-to-l from-white via-${step}-50 to-transparent`}
     >
       <div className="relative w-full md:w-[50%] flex justify-center">

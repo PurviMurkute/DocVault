@@ -1,36 +1,46 @@
 import { Schema, model } from "mongoose";
 
-const documentSchema = new Schema({
+const documentSchema = new Schema(
+  {
     url: {
-        type: String
+      type: String,
     },
     name: {
-        type: String
+      type: String,
     },
     fileid: {
-        type: String
+      type: String,
     },
     type: {
-        type: String
+      type: String,
     },
     size: {
-        type: String
+      type: String,
     },
     userId: {
-        type: Schema.Types.ObjectId,
-        ref: "User"
+      type: Schema.Types.ObjectId,
+      ref: "User",
     },
     isImportant: {
-        type: Boolean,
-        default: false
+      type: Boolean,
+      default: false,
+    },
+    isDeleted: {
+      type: Boolean,
+      default: false,
+    },
+    deletedAt: {
+      type: Date,
     },
     uploadedAt: {
-        type: Date,
-        default: Date.now()
-    }
-}, {
-    timestamps: true
-})
+      type: Date,
+      default: Date.now(),
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
 
 const Document = model("Document", documentSchema);
 

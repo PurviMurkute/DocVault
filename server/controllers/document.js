@@ -46,12 +46,14 @@ const getDocumentsbyUser = async (req, res) => {
     if (documentsFromRedis) {
       documents = documentsFromRedis;
     } else {
-      documents = await Document.find({ userId }).sort({
+      documents = await Document.find({ userId, isDeleted: false }).sort({
         createdAt: -1,
       });
       await createCache(getUserDocCacheKey(userId), documents);
       console.log(`cache create ${userId}`);
     }
+
+    console.log("USER ID in getDocumentsbyUser:", userId, documents);
 
     if (documents.length === 0) {
       return res.status(404).json({
@@ -112,13 +114,45 @@ const editDocuments = async (req, res) => {
   }
 };
 
+const tempDelete = async (req, res) => {
+  const { docId } = req.params;
+  const userId = req.user._id;
+
+  try {
+    const doc = await Document.findOne({ _id: docId, userId: userId });
+    if (!doc || doc.isDeleted === true) {
+      return res.status(404).json({
+        success: false,
+        message: "Document not found",
+      });
+    }
+
+    (doc.isDeleted = true), (doc.deletedAt = new Date());
+    await doc.save();
+    await flushCache(getUserDocCacheKey(userId));
+    await flushCache(`Temp deleted: ${userId}`);
+
+    return res.status(200).json({
+      success: true,
+      data: doc,
+      message: "Document moved to trash",
+    });
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      data: null,
+      message: error?.message,
+    });
+  }
+};
+
 const deleteDocuments = async (req, res) => {
   const { docId } = req.params;
   const userId = req.user._id;
 
   try {
-    const doc = await Document.findById(docId);
-    if (!doc) {
+    const doc = await Document.findOne({ _id: docId, userId });
+    if (!doc || doc.isDeleted !== true) {
       return res.status(404).json({
         success: false,
         message: "Document not found",
@@ -126,16 +160,93 @@ const deleteDocuments = async (req, res) => {
     }
 
     await imagekit.deleteFile(doc.fileid);
+    await Document.deleteOne({ _id: docId, userId });
 
-    const document = await Document.findByIdAndDelete(docId);
+    await flushCache(`Temp deleted: ${userId}`);
 
-    await flushCache(getUserDocCacheKey(userId));
-    console.log(`cache flush ${userId}`);
+    return res.status(200).json({
+      success: true,
+      data: doc,
+      message: "Document permanently deleted",
+    });
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      data: null,
+      message: error?.message,
+    });
+  }
+};
+
+const getTempDeletedDocuments = async (req, res) => {
+  const userId = req.user._id;
+  try {
+    let deletedDocs = [];
+
+    const deletedDocsFromRedis = await getCache(`Temp deleted: ${userId}`);
+
+    if (deletedDocsFromRedis) {
+      deletedDocs = deletedDocsFromRedis;
+    } else {
+      deletedDocs = await Document.find({
+        userId,
+        isDeleted: true,
+      }).sort({ deletedAt: -1 });
+
+      await createCache(`Temp deleted: ${userId}`, deletedDocs);
+      console.log(`cache created for deleted doc ${userId}`);
+    }
+
+    if (deletedDocs.length === 0) {
+      return res.status(404).json({
+        success: false,
+        data: null,
+        message: "Trash is empty",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      data: deletedDocs,
+      message: "deleted docs fetched successfully",
+    });
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      data: null,
+      message: error?.message,
+    });
+  }
+};
+
+const restoreDocument = async (req, res) => {
+  const { docId } = req.params;
+
+  try {
+    const document = await Document.findOne({
+      _id: docId,
+      userId: req.user._id,
+    });
+
+    if (!document || document.isDeleted !== true) {
+      return res.status(404).json({
+        success: false,
+        data: null,
+        message: "Document not found",
+      });
+    }
+
+    (document.isDeleted = false),
+      (document.deletedAt = null),
+      await document.save();
+
+    await flushCache(getUserDocCacheKey(req.user._id));
+    await flushCache(`Temp deleted: ${req.user._id}`);
 
     return res.status(200).json({
       success: true,
       data: document,
-      message: "File deleted successfully",
+      message: "Document restored successfully",
     });
   } catch (error) {
     return res.status(400).json({
@@ -157,6 +268,14 @@ const toggleImp = async (req, res) => {
         success: false,
         data: null,
         message: "Document not found",
+      });
+    }
+
+    if (document.isDeleted) {
+      return res.status(400).json({
+        success: false,
+        data: null,
+        message: "Cannot mark deleted document as important",
       });
     }
 
@@ -194,14 +313,14 @@ const searchDoc = async (req, res) => {
       return res.status(200).json({
         success: true,
         data: null,
-        message: "No documents found matching your search."
+        message: "No documents found matching your search.",
       });
     }
 
     return res.status(200).json({
       success: true,
       data: searchedDocs,
-      message: "Documents fetched successfully"
+      message: "Documents fetched successfully",
     });
   } catch (error) {
     return res.status(500).json({
@@ -215,7 +334,10 @@ export {
   postDocuments,
   getDocumentsbyUser,
   editDocuments,
+  tempDelete,
   deleteDocuments,
+  getTempDeletedDocuments,
+  restoreDocument,
   toggleImp,
   searchDoc,
 };
