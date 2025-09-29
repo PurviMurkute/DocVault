@@ -23,6 +23,9 @@ const MiniHeader = ({
   searchText,
   setSearchText,
   isTrash,
+  isImages,
+  isPdfs,
+  isImp,
   tempDeleted,
 }) => {
   const navigate = useNavigate();
@@ -32,7 +35,7 @@ const MiniHeader = ({
 
   const { setUser } = useContext(UserContext);
 
-  const deleteFile = async () => {
+  const tempDeleteFile = async () => {
     try {
       await Promise.all(
         selected.map((id) =>
@@ -55,7 +58,9 @@ const MiniHeader = ({
       setTimeout(() => {
         getDocuments();
       }, 1000);
-      toast.success(`${selected.length} document(s) deleted ✅`);
+      toast.success(
+        `${selected.length} document(s) moved to trash successfully ✅`
+      );
       setSelected([]);
     } catch (error) {
       if (error?.response?.data?.message == "Invalid or expired token") {
@@ -132,8 +137,85 @@ const MiniHeader = ({
     }
   };
 
+  const deletePermanently = async () => {
+    try {
+      await Promise.all(
+        selected.map((id) =>
+          axios.delete(`${import.meta.env.VITE_SERVER_URL}/docs/${id}`, {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("JWT")}`,
+            },
+          })
+        )
+      );
+
+      setGetDocs((prevDocs) =>
+        prevDocs.filter((doc) => !selected.includes(doc._id))
+      );
+
+      setTimeout(() => {
+        getDocuments();
+      }, 500);
+      toast.success(`${selected.length} document(s) deleted permanently ✅`);
+      setSelected([]);
+    } catch (error) {
+      if (error?.response?.data?.message == "Invalid or expired token") {
+        localStorage.removeItem("JWT");
+        localStorage.removeItem("user");
+        setUser(null);
+        toast.error("JWT expired, please signin again");
+        setTimeout(() => {
+          navigate("/login");
+        }, 2000);
+        return;
+      }
+      toast.error(error?.response?.data?.message || error?.message);
+    }
+  };
+
+  const restoreDocs = async () => {
+    try {
+      await Promise.all(
+        selected.map((id) =>
+          axios.patch(
+            `${import.meta.env.VITE_SERVER_URL}/docs/restore/${id}`,
+            {},
+            {
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem("JWT")}`,
+              },
+            }
+          )
+        )
+      );
+
+      setGetDocs((prevDocs) =>
+        prevDocs.filter((doc) => !selected.includes(doc._id))
+      );
+
+      setTimeout(() => {
+        getDocuments();
+      }, 500);
+      toast.success(`${selected.length} document(s) restored successfully ✅`);
+      setSelected([]);
+      navigate("/dashboard");
+    } catch (error) {
+      if (error?.response?.data?.message == "Invalid or expired token") {
+        localStorage.removeItem("JWT");
+        localStorage.removeItem("user");
+        setUser(null);
+        toast.error("JWT expired, please signin again");
+        setTimeout(() => {
+          navigate("/login");
+        }, 2000);
+        return;
+      }
+      toast.error(error?.response?.data?.message || error?.message);
+    }
+  };
+
   const handleDelete = () => {
-    deleteFile();
+    deletePermanently();
     setIsDeleteModalOpen(false);
   };
 
@@ -147,18 +229,31 @@ const MiniHeader = ({
   };
 
   const handleSelectAll = () => {
-    if (
-      selected.length === getDocs.length ||
-      selected.length === tempDeleted.length
-    ) {
+    let visibleDocs = [];
+
+    if (isTrash) {
+      visibleDocs = tempDeleted;
+    } else {
+      visibleDocs = getDocs.filter((doc) => {
+        const ext = doc.name.split(".").pop().toLowerCase();
+        if (isImages) {
+          return ["png", "jpg", "jpeg", "webp"].includes(ext);
+        }
+        if (isPdfs) {
+          return ext === "pdf";
+        }
+        if (isImp) {
+          return doc.isImportant;
+        }
+        return true;
+      });
+    }
+
+    if (selected.length === visibleDocs.length) {
       setSelected([]);
       setSelectAll(false);
     } else {
-      {
-        isTrash
-          ? setSelected(tempDeleted.map((doc) => doc._id))
-          : setSelected(getDocs.map((doc) => doc._id));
-      }
+      setSelected(visibleDocs.map((doc) => doc._id));
       setSelectAll(true);
     }
   };
@@ -201,6 +296,7 @@ const MiniHeader = ({
                     ? "cursor-not-allowed"
                     : "cursor-pointer border-red-700 text-red-600"
                 }`}
+                onclick={() => setIsDeleteModalOpen(true)}
               />
               <Button
                 btnText={"Restore"}
@@ -211,6 +307,7 @@ const MiniHeader = ({
                     ? "cursor-not-allowed"
                     : "cursor-pointer border-green-700 text-green-600"
                 }`}
+                onclick={restoreDocs}
               />
             </>
           ) : (
@@ -224,7 +321,7 @@ const MiniHeader = ({
                     ? "cursor-not-allowed"
                     : "cursor-pointer border-red-700 text-red-600"
                 }`}
-                onclick={() => setIsDeleteModalOpen(true)}
+                onclick={tempDeleteFile}
               />
               <Button
                 btnText={"Edit"}
@@ -272,7 +369,7 @@ const MiniHeader = ({
       >
         <div className="flex flex-col gap-3 px-2 md:py-3 md:px-4">
           <h4 className="text-center font-bold text-gray-800">
-            Are you sure you want to delete this document?
+            Are you sure you want to permanently delete this document?
           </h4>
           <p className="text-center font-medium text-gray-600 text-sm">
             This action cannot be undone and the file will be permanently

@@ -255,6 +255,9 @@ const Dashboard = () => {
           searchText={searchText}
           setSearchText={setSearchText}
           isTrash={isTrash}
+          isImages={isImages}
+          isPdfs={isPdfs}
+          isImp={isImp}
           tempDeleted={tempDeleted}
         />
         <div>
@@ -314,7 +317,7 @@ const Dashboard = () => {
           </p>
           {loading ? (
             <Loader loadingText={"loading your documents"} />
-          ) : (!getDocs || getDocs.length === 0) && !searchText && !isTrash ? (
+          ) : (!getDocs || getDocs.length === 0) && !searchText && !tempDeleted ? (
             <div className="flex flex-col justify-center items-center mt-20">
               <img src="/empty.png" alt="emptybox" className="w-[250px]" />
               <p className="font-medium font-sans text-center px-5">
@@ -322,7 +325,7 @@ const Dashboard = () => {
               </p>
             </div>
           ) : (searchText && (!getDocs || getDocs.length === 0)) ||
-            (isTrash && (!tempDeleted || tempDeleted.length === 0)) ? (
+            (searchText && isTrash && (!tempDeleted || tempDeleted.length === 0)) ? (
             <div className="text-center py-30 text-gray-500 px-6">
               Opps.. No documents found for your search{" "}
               <span className="font-bold">{searchText}</span>
