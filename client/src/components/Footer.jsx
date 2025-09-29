@@ -1,6 +1,4 @@
 import React from "react";
-import logo from "../assets/pages.png";
-import { Link } from "react-router";
 import { MdMail, MdAddIcCall, MdLocationPin } from "react-icons/md";
 import {
   FaFacebookF,
@@ -16,7 +14,7 @@ const Footer = () => {
       <div className="container mx-auto flex flex-col md:flex-row justify-between gap-8 px-5 md:px-20">
         <div className="flex flex-col gap-3 md:w-[500px]">
           <div className="flex items-center gap-2">
-            <img src={logo} alt="logo" className="w-8 md:w-10" />
+            <img src={'/pages.png'} alt="logo" className="w-8 md:w-10" />
             <span className="text-2xl font-bold font-serif">DocVault</span>
           </div>
           <p className="text-gray-300">

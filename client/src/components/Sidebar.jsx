@@ -1,4 +1,3 @@
-import logo from "../assets/pages.png";
 import { Link, useLocation, useNavigate } from "react-router";
 import { IoMdCloseCircle } from "react-icons/io";
 import Button from "./Button";
@@ -58,7 +57,7 @@ const Sidebar = ({
           <div className="flex flex-col gap-3">
             <div className="flex justify-between items-center">
               <Link to="/" className="flex items-center gap-1 ">
-                <img src={logo} alt="logo" className="w-[25px]" />
+                <img src={'/pages.png'} alt="logo" className="w-[25px]" />
                 <p className="text-xl md:text-2xl font-medium font-serif">
                   DocVault
                 </p>

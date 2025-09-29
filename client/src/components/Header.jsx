@@ -1,5 +1,4 @@
 import React, { useContext, useEffect, useState } from "react";
-import logo from "../assets/pages.png";
 import Button from "./Button";
 import { Link, useNavigate } from "react-router";
 import { UserContext } from "../context/UserContext";
@@ -27,7 +26,7 @@ const Header = () => {
     >
       <div className="flex justify-between items-center">
         <Link to="/" className="flex items-center gap-2 ">
-          <img src={logo} alt="logo" className="w-[30px]" />
+          <img src={'/pages.png'} alt="logo" className="w-[30px]" />
           <p className="text-xl md:text-2xl font-bold font-serif">DocVault</p>
         </Link>
         <div

@@ -58,7 +58,7 @@ const getDocumentsbyUser = async (req, res) => {
     if (documents.length === 0) {
       return res.status(404).json({
         success: false,
-        data: null,
+        data: [],
         message: "No documents added yet",
       });
     }
@@ -140,7 +140,7 @@ const tempDelete = async (req, res) => {
   } catch (error) {
     return res.status(400).json({
       success: false,
-      data: null,
+      data: [],
       message: error?.message,
     });
   }
@@ -231,7 +231,7 @@ const restoreDocument = async (req, res) => {
     if (!document || document.isDeleted !== true) {
       return res.status(404).json({
         success: false,
-        data: null,
+        data: [],
         message: "Document not found",
       });
     }
@@ -312,7 +312,7 @@ const searchDoc = async (req, res) => {
     if (searchedDocs.length === 0) {
       return res.status(200).json({
         success: true,
-        data: null,
+        data: [],
         message: "No documents found matching your search.",
       });
     }

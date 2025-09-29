@@ -187,7 +187,8 @@ const Dashboard = () => {
       console.log(response.data);
 
       if (response.data.success) {
-        setGetDocs(response.data.data);
+        const filteredDocs = response.data.data.filter((doc) => !doc.isDeleted);
+        setGetDocs(filteredDocs);
       } else {
         toast.error(response.data.message);
       }
@@ -229,6 +230,40 @@ const Dashboard = () => {
     }
   };
 
+  const toggleSelectAll = () => {
+    setSelectAll(!selectAll);
+  };
+
+  const handleSelectAll = () => {
+    let visibleDocs = [];
+
+    if (isTrash) {
+      visibleDocs = tempDeleted;
+    } else {
+      visibleDocs = getDocs.filter((doc) => {
+        const ext = doc.name.split(".").pop().toLowerCase();
+        if (isImages) {
+          return ["png", "jpg", "jpeg", "webp"].includes(ext);
+        }
+        if (isPdfs) {
+          return ext === "pdf";
+        }
+        if (isImp) {
+          return doc.isImportant;
+        }
+        return true;
+      });
+    }
+
+    if (selected.length === visibleDocs.length) {
+      setSelected([]);
+      setSelectAll(false);
+    } else {
+      setSelected(visibleDocs.map((doc) => doc._id));
+      setSelectAll(true);
+    }
+  };
+
   return (
     <div className="flex">
       <div className={`${isSidebarOpen ? "w-1/6" : "w-0"}`}>
@@ -258,7 +293,10 @@ const Dashboard = () => {
           isImages={isImages}
           isPdfs={isPdfs}
           isImp={isImp}
+          isDashboard={isDashboard}
           tempDeleted={tempDeleted}
+          toggleSelectAll={toggleSelectAll}
+          handleSelectAll={handleSelectAll}
         />
         <div>
           <IKContext
@@ -312,12 +350,36 @@ const Dashboard = () => {
           </IKContext>
         </div>
         <div>
-          <p className="text-gray-600 font-bold ps-3 md:ps-13 mt-5">
-            Documents
-          </p>
+          <div
+            className={`flex ${
+              isDashboard ? "justify-start" : "justify-between"
+            } mt-5 px-3 md:px-15 items-center`}
+          >
+            <p className="text-gray-600 font-bold">Documents</p>
+            {!isDashboard && (
+              <div
+                className="flex items-center gap-2 cursor-pointer"
+                onClick={() => {
+                  toggleSelectAll(), handleSelectAll();
+                }}
+              >
+                <p
+                  className={`${
+                    selectAll
+                      ? "bg-blue-600 border-none"
+                      : "bg-white border-1 border-gray-500"
+                  } p-[6px]`}
+                ></p>
+                <p className="text-sm">Select All</p>
+              </div>
+            )}
+          </div>
+
           {loading ? (
             <Loader loadingText={"loading your documents"} />
-          ) : (!getDocs || getDocs.length === 0) && !searchText && !tempDeleted ? (
+          ) : (!getDocs || getDocs.length === 0) &&
+            (!tempDeleted || tempDeleted.length === 0) &&
+            !searchText ? (
             <div className="flex flex-col justify-center items-center mt-20">
               <img src="/empty.png" alt="emptybox" className="w-[250px]" />
               <p className="font-medium font-sans text-center px-5">
@@ -325,7 +387,9 @@ const Dashboard = () => {
               </p>
             </div>
           ) : (searchText && (!getDocs || getDocs.length === 0)) ||
-            (searchText && isTrash && (!tempDeleted || tempDeleted.length === 0)) ? (
+            (searchText &&
+              isTrash &&
+              (!tempDeleted || tempDeleted.length === 0)) ? (
             <div className="text-center py-30 text-gray-500 px-6">
               Opps.. No documents found for your search{" "}
               <span className="font-bold">{searchText}</span>

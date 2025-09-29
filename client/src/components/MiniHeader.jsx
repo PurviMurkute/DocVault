@@ -26,7 +26,10 @@ const MiniHeader = ({
   isImages,
   isPdfs,
   isImp,
+  isDashboard,
   tempDeleted,
+  toggleSelectAll,
+  handleSelectAll
 }) => {
   const navigate = useNavigate();
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -224,40 +227,6 @@ const MiniHeader = ({
     setIsEditModalOpen(false);
   };
 
-  const toggleSelectAll = () => {
-    setSelectAll(!selectAll);
-  };
-
-  const handleSelectAll = () => {
-    let visibleDocs = [];
-
-    if (isTrash) {
-      visibleDocs = tempDeleted;
-    } else {
-      visibleDocs = getDocs.filter((doc) => {
-        const ext = doc.name.split(".").pop().toLowerCase();
-        if (isImages) {
-          return ["png", "jpg", "jpeg", "webp"].includes(ext);
-        }
-        if (isPdfs) {
-          return ext === "pdf";
-        }
-        if (isImp) {
-          return doc.isImportant;
-        }
-        return true;
-      });
-    }
-
-    if (selected.length === visibleDocs.length) {
-      setSelected([]);
-      setSelectAll(false);
-    } else {
-      setSelected(visibleDocs.map((doc) => doc._id));
-      setSelectAll(true);
-    }
-  };
-
   return (
     <div className="flex flex-col">
       <div className="flex justify-between items-center px-2 md:px-5 py-2 border-b-1 border-gray-300">
@@ -338,31 +307,34 @@ const MiniHeader = ({
           )}
         </div>
       </div>
-      <div className="flex justify-between items-center gap-5 px-2 md:px-5 border-b-1 border-gray-300">
-        <div className={`${isSidebarOpen ? "ps-5" : "ps-0"} w-[70%]`}>
-          <Input
-            type={"text"}
-            placeholder={`🔎 Search your docs here...`}
-            value={searchText}
-            onChange={(e) => setSearchText(e.target.value)}
-          />
+      {isDashboard && (
+        <div className="flex justify-between items-center gap-5 px-2 md:px-5 border-b-1 border-gray-300">
+          <div className={`${isSidebarOpen ? "ps-5" : "ps-0"} w-[70%]`}>
+            <Input
+              type={"text"}
+              placeholder={`🔎 Search your docs here...`}
+              value={searchText}
+              onChange={(e) => setSearchText(e.target.value)}
+            />
+          </div>
+          <div
+            className="flex items-center gap-2 cursor-pointer"
+            onClick={() => {
+              toggleSelectAll(), handleSelectAll();
+            }}
+          >
+            <p
+              className={`${
+                selectAll
+                  ? "bg-blue-600 border-none"
+                  : "bg-white border-1 border-gray-500"
+              } p-[6px]`}
+            ></p>
+            <p className="text-sm">Select All</p>
+          </div>
         </div>
-        <div
-          className="flex items-center gap-2 cursor-pointer"
-          onClick={() => {
-            toggleSelectAll(), handleSelectAll();
-          }}
-        >
-          <p
-            className={`${
-              selectAll
-                ? "bg-blue-600 border-none"
-                : "bg-white border-1 border-gray-500"
-            } p-[6px]`}
-          ></p>
-          <p className="text-sm">Select All</p>
-        </div>
-      </div>
+      )}
+
       <Modal
         isOpen={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}
