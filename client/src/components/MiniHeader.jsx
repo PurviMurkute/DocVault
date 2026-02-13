@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import { IoMdHome } from "react-icons/io";
 import Button from "./Button";
 import { IoMdRefreshCircle } from "react-icons/io";
@@ -19,15 +19,10 @@ const MiniHeader = ({
   isSidebarOpen,
   setIsSidebarOpen,
   selectAll,
-  setSelectAll,
   searchText,
   setSearchText,
   isTrash,
-  isImages,
-  isPdfs,
-  isImp,
   isDashboard,
-  tempDeleted,
   toggleSelectAll,
   handleSelectAll
 }) => {

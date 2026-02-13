@@ -53,7 +53,7 @@ const Dashboard = () => {
   const isDashboard = location.pathname === "/dashboard";
   const isImages = location.pathname === "/dashboard/images";
   const isPdfs = location.pathname === "/dashboard/pdf's";
-  const isImp = location.pathname === "/dashboard/imp's";
+  const isImp = location.pathname === "/dashboard/starred";
   const isTrash = location.pathname === "/dashboard/trash";
 
   const fetchAuth = async () => {
@@ -123,7 +123,7 @@ const Dashboard = () => {
         setGetDocs(response.data.data || []);
       } else {
         setGetDocs([]);
-        toast.error(error?.response?.data?.message || error?.message);
+        toast.error(response.data.message);
       }
     } catch (error) {
       if (error?.response?.data?.message == "Invalid or expired token") {
@@ -156,7 +156,7 @@ const Dashboard = () => {
       if (response.data.success) {
         setTempDeleted(response.data.data);
       } else {
-        toast.error(response.data.message);
+        console.log(response.data.message);
       }
     } catch (error) {
       if (error?.response?.data?.message == "Invalid or expired token") {
@@ -264,6 +264,9 @@ const Dashboard = () => {
     }
   };
 
+  let docsName = getDocs?.forEach((doc)=> doc.name);
+  const ext = docsName?.split(".").pop();
+
   return (
     <div className="flex">
       <div className={`${isSidebarOpen ? "w-1/6" : "w-0"}`}>
@@ -290,11 +293,7 @@ const Dashboard = () => {
           searchText={searchText}
           setSearchText={setSearchText}
           isTrash={isTrash}
-          isImages={isImages}
-          isPdfs={isPdfs}
-          isImp={isImp}
           isDashboard={isDashboard}
-          tempDeleted={tempDeleted}
           toggleSelectAll={toggleSelectAll}
           handleSelectAll={handleSelectAll}
         />
@@ -318,7 +317,7 @@ const Dashboard = () => {
                     id: "upload-toast",
                   });
                   files.forEach((file) => {
-                    setFileName(file.name); // use original name for each file
+                    setFileName(file.name); 
                   });
                 }
               }}
@@ -381,10 +380,30 @@ const Dashboard = () => {
             (!tempDeleted || tempDeleted.length === 0) &&
             !searchText ? (
             <div className="flex flex-col justify-center items-center mt-20">
-              <img src="/empty.png" alt="emptybox" className="w-[250px]" />
-              <p className="font-medium font-sans text-center px-5">
-                Your vault is empty - upload a document to get started.
-              </p>
+              {isDashboard ? (
+                <>
+                <img src="/empty.png" alt="emptybox" className="w-[250px]" />
+                <p className="font-medium font-sans text-center px-5">
+                  Your vault is empty - upload a document to get started.
+                </p>
+                </>
+              ) : isImages ? (
+                <p className="font-medium font-sans text-center px-5">
+                  No images added yet
+                </p>
+              ) : isPdfs ? (
+                <p className="font-medium font-sans text-center px-5">
+                  No PDF'S added yet
+                </p>
+              ) : isTrash ? (
+                <p className="font-medium font-sans text-center px-5">
+                  Trash is Empty
+                </p>
+              ) : isImp ? (
+                <p className="font-medium font-sans text-center px-5">
+                  No starred files
+                </p>
+              ) : null}
             </div>
           ) : (searchText && (!getDocs || getDocs.length === 0)) ||
             (searchText &&
@@ -406,8 +425,6 @@ const Dashboard = () => {
                   isDeleted,
                   deletedAt,
                 } = doc;
-
-                const ext = name.split(".").pop();
 
                 return (
                   <>

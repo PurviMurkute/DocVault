@@ -3,6 +3,7 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import { IoMdStar } from "react-icons/io";
 import { IoMdStarOutline } from "react-icons/io";
+import { useNavigate } from "react-router";
 
 const DocCard = ({
   selected,
@@ -25,6 +26,8 @@ const DocCard = ({
     hour: "2-digit",
     minute: "2-digit",
   });
+
+  const navigate = useNavigate();
 
   const toggleImportant = async () => {
     try {

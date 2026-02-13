@@ -16,22 +16,26 @@ client.on('error', (err) => {
 });
 await client.connect();
 
+const PREFIX = process.env.REDIS_PREFIX || 'app';
+
+const withPrefix = (key) => `${PREFIX}:${key}`;
+
 const createCache = async(key, value) => {
-    await client.set(key, JSON.stringify(value));
+    await client.set(withPrefix(key), JSON.stringify(value));
     return true; 
 }
 
 const getCache = async(key) => {
-    const value = await client.get(key);
+    const value = await client.get(withPrefix(key));
     if(value){
-        console.log(`Cache hit for key: ${key}`);
+        console.log(`Cache hit for key: ${withPrefix(key)}`);
     }
     return value ? JSON.parse(value) : null;
 }
 
 const flushCache = async (key) => {
-    await client.del(key);
-    console.log(`Cache flushed for key: ${key}`);
+    await client.del(withPrefix(key));
+    console.log(`Cache flushed for key: ${withPrefix(key)}`);
 };
 
 export { createCache, getCache, flushCache };

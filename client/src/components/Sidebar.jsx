@@ -42,8 +42,8 @@ const Sidebar = ({
     },
     {
       icon: <AiFillStar className="text-yellow-600" />,
-      label: "Important's",
-      pathname: "/dashboard/imp's"
+      label: "Starred",
+      pathname: "/dashboard/starred"
     },
   ];
 

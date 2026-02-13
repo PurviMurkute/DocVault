@@ -6,6 +6,7 @@ import mongoose from 'mongoose';
 import userRouter from './routes/userRoutes.js';
 import { Router } from './config/imagekit.js';
 import docRouter from './routes/docRoutes.js';
+import job from './config/cron.js';
 
 dotenv.config();
 
@@ -26,6 +27,8 @@ const connDB = async () => {
     console.log("MongoDB not Connected");
   }
 };
+
+job.start();
 
 app.get('/health', (req, res) => {
     res.json({
