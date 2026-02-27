@@ -223,7 +223,7 @@ const MiniHeader = ({
   };
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col sticky top-0 left-0 right-0 bg-white">
       <div className="flex justify-between items-center px-2 md:px-5 py-2 border-b-1 border-gray-300">
         <div
           className={`flex items-center gap-1 ${

@@ -38,7 +38,7 @@ const DocCard = ({
           headers: {
             Authorization: `Bearer ${localStorage.getItem("JWT")}`,
           },
-        }
+        },
       );
 
       if (response.data.success) {
@@ -89,7 +89,7 @@ const DocCard = ({
             ))}
         </div>
 
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2" onClick={setSelected}>
           <p className="font-bold break-words text-sm md:text-md">{name}</p>
           <p className="text-xs md:text-sm text-gray-600">{formattedDate}</p>
           {isDeleted && deletedAt && (
@@ -99,7 +99,7 @@ const DocCard = ({
           )}
         </div>
       </div>
-      {!isDeleted? (
+      {!isDeleted ? (
         <a
           href={url}
           target="_blank"
@@ -108,9 +108,7 @@ const DocCard = ({
         >
           View
         </a>
-      ) : (
-        null
-      )}
+      ) : null}
     </div>
   );
 };

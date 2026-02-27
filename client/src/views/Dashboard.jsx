@@ -263,9 +263,22 @@ const Dashboard = () => {
       setSelectAll(true);
     }
   };
-
-  let docsName = getDocs?.forEach((doc)=> doc.name);
-  const ext = docsName?.split(".").pop();
+  
+  const visibleDocs = isTrash
+    ? tempDeleted
+    : getDocs.filter((doc) => {
+        const ext = doc?.name?.split(".").pop()?.toLowerCase();
+        if (isImages) {
+          return ["png", "jpg", "jpeg", "webp"].includes(ext);
+        }
+        if (isPdfs) {
+          return ext === "pdf";
+        }
+        if (isImp) {
+          return doc.isImportant;
+        }
+        return true;
+      });
 
   return (
     <div className="flex">
@@ -276,6 +289,8 @@ const Dashboard = () => {
           setIsSidebarOpen={setIsSidebarOpen}
           onUploadOnclick={onUploadOnclick}
           closeSideBar={closeSideBar}
+          setSelectAll={setSelectAll}
+          setSelected={setSelected}
         />
       </div>
       <div className="w-full">
@@ -376,9 +391,7 @@ const Dashboard = () => {
 
           {loading ? (
             <Loader loadingText={"loading your documents"} />
-          ) : (!getDocs || getDocs.length === 0) &&
-            (!tempDeleted || tempDeleted.length === 0) &&
-            !searchText ? (
+          ) : (!visibleDocs || visibleDocs.length === 0) && !searchText ? (
             <div className="flex flex-col justify-center items-center mt-20">
               {isDashboard ? (
                 <>
@@ -405,17 +418,14 @@ const Dashboard = () => {
                 </p>
               ) : null}
             </div>
-          ) : (searchText && (!getDocs || getDocs.length === 0)) ||
-            (searchText &&
-              isTrash &&
-              (!tempDeleted || tempDeleted.length === 0)) ? (
+          ) : (searchText && (!visibleDocs || visibleDocs.length === 0)) ? (
             <div className="text-center py-30 text-gray-500 px-6">
               Opps.. No documents found for your search{" "}
               <span className="font-bold">{searchText}</span>
             </div>
           ) : (
             <div className="flex flex-col items-center gap-5 px-2 md:px-13 py-4">
-              {(isTrash ? tempDeleted : getDocs)?.map((doc) => {
+              {visibleDocs?.map((doc) => {
                 const {
                   _id,
                   url,
@@ -425,75 +435,20 @@ const Dashboard = () => {
                   isDeleted,
                   deletedAt,
                 } = doc;
-
                 return (
-                  <>
-                    {isDashboard ? (
-                      <DocCard
-                        key={_id}
-                        _id={_id}
-                        selected={selected.includes(_id)}
-                        setSelected={() => toggleSelected(_id)}
-                        url={url}
-                        name={name}
-                        uploadedAt={uploadedAt}
-                        isImportant={isImportant}
-                        getDocuments={getDocuments}
-                      />
-                    ) : isImages &&
-                      (ext === "png" ||
-                        ext === "jpg" ||
-                        ext === "jpeg" ||
-                        ext === "webp") ? (
-                      <DocCard
-                        key={_id}
-                        selected={selected.includes(_id)}
-                        setSelected={() => toggleSelected(_id)}
-                        url={url}
-                        name={name}
-                        uploadedAt={uploadedAt}
-                        isImportant={isImportant}
-                        getDocuments={getDocuments}
-                      />
-                    ) : isPdfs && ext === "pdf" ? (
-                      <DocCard
-                        key={_id}
-                        _id={_id}
-                        selected={selected.includes(_id)}
-                        setSelected={() => toggleSelected(_id)}
-                        url={url}
-                        name={name}
-                        uploadedAt={uploadedAt}
-                        isImportant={isImportant}
-                        getDocuments={getDocuments}
-                      />
-                    ) : isImp && isImportant ? (
-                      <DocCard
-                        key={_id}
-                        _id={_id}
-                        selected={selected.includes(_id)}
-                        setSelected={() => toggleSelected(_id)}
-                        url={url}
-                        name={name}
-                        uploadedAt={uploadedAt}
-                        isImportant={isImportant}
-                        getDocuments={getDocuments}
-                      />
-                    ) : isTrash ? (
-                      <DocCard
-                        key={_id}
-                        _id={_id}
-                        selected={selected.includes(_id)}
-                        setSelected={() => toggleSelected(_id)}
-                        url={url}
-                        name={name}
-                        uploadedAt={uploadedAt}
-                        getDocuments={getTempDeleted}
-                        isDeleted={isDeleted}
-                        deletedAt={deletedAt}
-                      />
-                    ) : null}
-                  </>
+                  <DocCard
+                    key={_id}
+                    _id={_id}
+                    selected={selected.includes(_id)}
+                    setSelected={() => toggleSelected(_id)}
+                    url={url}
+                    name={name}
+                    uploadedAt={uploadedAt}
+                    isImportant={isImportant}
+                    getDocuments={isTrash ? getTempDeleted : getDocuments}
+                    isDeleted={isDeleted}
+                    deletedAt={deletedAt}
+                  />
                 );
               })}
             </div>
